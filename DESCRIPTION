@@ -1,0 +1,18 @@
+Package: fragtalrock
+Type: Package
+Title: Generate fractal time series with non-normal returns distribution
+Version: 1.0
+Date: 2009-03-23
+Author: Brian Lee Yung Rowe
+Maintainer: Brian Lee Yung Rowe <r@nurometic.com>
+Depends: futile, timeDate, zoo, xts, quantmod
+Description: The basic principle driving fractal generation of time series is
+  that data is generated iteratively based on increasing levels of resolution.
+  The initial series is defined by a so-called initiator pattern and then 
+  generators are used to replace each segment of the initial pattern. Regular,
+  repeatable patterns can be produced by using the same seed and generators. 
+  By using a set  of generators, non-repeatable time series can be produced. 
+  This technique is the basis of the fractal time series process in this 
+  package.
+License: GPL-2
+LazyLoad: yes
