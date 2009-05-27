@@ -1,10 +1,10 @@
-\name{fragtal}
-\alias{fragtal}
-\alias{fragtal.uniform}
-\alias{fragtal.random}
+\name{fractal}
+\alias{fractal}
+\alias{fractal.uniform}
+\alias{fractal.random}
 \title{ Create time series based on fractal generators }
 \description{
-  The fragtal function generates a time series of points using basic principles
+  The fractal function generates a time series of points using basic principles
   of fractal patterns. Fractal generation can be used to simulate a time series
   of asset prices, which has been shown to better reflect the distribution of
   returns than using a Gaussian random walk. Any number of points can be
@@ -13,11 +13,11 @@
   plus the available patterns.
 }
 \usage{
-fragtal(seed, patterns, count = NULL, epochs = NULL, ..., type = "uniform")
+fractal(seed, patterns, count = NULL, epochs = NULL, ..., type = "uniform")
 
-fragtal.uniform(seed, patterns, count = NULL, epochs = NULL, origin = '1970-01-01', only = NULL)
+fractal.uniform(seed, patterns, count = NULL, epochs = NULL, origin = '1970-01-01', only = NULL)
 
-fragtal.random(seed, patterns, count)
+fractal.random(seed, patterns, count)
 }
 \arguments{
   \item{seed}{ The seed pattern to use for generating the time series }
@@ -39,10 +39,10 @@ fragtal.random(seed, patterns, count)
 \author{ Brian Lee Yung Rowe }
 \examples{
 data(generators)
-series <- fragtal(sampleInitiator, sampleGenerators, count=10)
+series <- fractal(sampleInitiator, sampleGenerators, count=10)
 
 # View the results of a single iteration using the second pattern
-series <- fragtal(sampleInitiator, sampleGenerators, epochs=1, only=2)
+series <- fractal(sampleInitiator, sampleGenerators, epochs=1, only=2)
 }
 \keyword{ ts }
 \keyword{ math }

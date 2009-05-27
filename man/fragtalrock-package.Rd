@@ -1,6 +1,6 @@
-\name{fragtalrock-package}
-\alias{fragtalrock-package}
-\alias{fragtalrock}
+\name{fractalrock-package}
+\alias{fractalrock-package}
+\alias{fractalrock}
 \docType{package}
 \title{
   A package for generating time series data using fractals
@@ -25,7 +25,7 @@
 }
 \details{
 \tabular{ll}{
-Package: \tab fragtalrock\cr
+Package: \tab fractalrock\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
 Date: \tab 2009-03-23\cr
@@ -35,7 +35,7 @@ To generate a set of asset prices, the function \code{\link{getPortfolioPrices}}
 one time series per 'asset' provided. In addition, the dates will be coerced
 to fit a given business day calendar based on timeDate.
 
-Investigation into fractals via this package is best accomplished by calling theunderlying \code{\link{fragtal}} function. This function produces raw values
+Investigation into fractals via this package is best accomplished by calling theunderlying \code{\link{fractal}} function. This function produces raw values
 useful for analysis of the fractal generation process.
 }
 \author{

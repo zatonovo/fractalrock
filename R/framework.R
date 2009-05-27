@@ -56,11 +56,11 @@ getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
   set <- NULL
   for (symbol in symbols)
   {
-    # Call fragtal, and cbind
+    # Call fractal, and cbind
     if (! exists('count') & ! exists('epochs'))
-      ts <- fragtal(seeds, patterns, ..., count=obs, type=type)
+      ts <- fractal(seeds, patterns, ..., count=obs, type=type)
     else
-      ts <- fragtal(seeds, patterns, ..., type=type)
+      ts <- fractal(seeds, patterns, ..., type=type)
 
     #ts <- ts[(nrow(ts)-length(dates)+1):nrow(ts),]
     ts <- tail(ts, anylength(dates))
@@ -76,30 +76,33 @@ getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
 # epochs - number of iterations to run. Note that the count grows quickly.
 # Example
 # Get 10 points
-# ps <- fragtal(seed, pats, 10)
+# ps <- fractal(seed, pats, 10)
+# ps <- fractal(sample(sampleInitiators,1), sampleGenerators, 10)
 # Get 3 epochs
-# ps <- fragtal(seed, pats, epochs=3)
-fragtal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform')
+# ps <- fractal(seed, pats, epochs=3)
+fractal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform')
 {
   require(xts, quietly=TRUE)
   if ('list' %in% class(seeds)) seed <- sample(seeds, 1)
   else seed <- seeds
 
-  do.call(paste('fragtal.',type, sep=''), list(seed,patterns,count,epochs,...))
+  do.call(paste('fractal.',type, sep=''), list(seed,patterns,count,epochs,...))
 }
 
-# ps <- fragtal.uniform(seed,pats, 2)
-# ps <- fragtal.uniform(seed,pattern.3, 1); plot(ps, type='l')
+# ps <- fractal.uniform(seed,pats, 2)
+# ps <- fractal.uniform(seed,pattern.3, 1); plot(ps, type='l')
 # origin - The date at which to start time series. Default is the beginning of
 # the unix epoch, but any valid date is allowed.
+# date.fun - The function to use to create dates. This defaults to as.Date, but
+#   for intraday work, it's possible to use as.POSIXct
 # only - Only use the given index in pattern
 # Example
 # Get 10 points
-# ps <- fragtal.uniform(seed, pats, 10)
+# ps <- fractal.uniform(seed, pats, 10)
 # Get 3 epochs
-# ps <- fragtal.uniform(seed, pats, epochs=3)
-fragtal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
-  origin='1970-01-01', only=NULL)
+# ps <- fractal.uniform(seed, pats, epochs=3)
+fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
+  origin='1970-01-01', date.fun=as.Date, only=NULL)
 {
   require(futile)
   if (! 'list' %in% class(patterns))
@@ -154,14 +157,15 @@ fragtal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
     }
     seed <- next.seed[order(next.seed[,1]),]
   }
+  # TODO: This may cause problems related to binary order sign
   seed <- unique(seed)
   #seed[,1] <- as.Date(seed[,1], origin=origin)
-  seed <- xts(seed[,2], order.by=as.Date(seed[,1], origin=origin))
+  seed <- xts(seed[,2], order.by=date.fun(seed[,1], origin=origin))
   if (use.count) seed <- tail(seed, count)
   return(seed)
 }
 
-fragtal.random <- function(seed, patterns, count)
+fractal.random <- function(seed, patterns, count)
 {
   if (! 'list' %in% class(patterns))
   {
@@ -236,9 +240,18 @@ plotReturns <- function(series, ...)
 #  pattern.3=pattern.3, pattern.4=pattern.4, pattern.5=pattern.5,
 #  pattern.6=pattern.6, pattern.7=pattern.7, pattern.8=pattern.8,
 #  pattern.9=pattern.9)
-#save(sampleInitiators, sampleGenerators, file='fragtalrock/data/generators.RData')
+#save(sampleInitiators, sampleGenerators, file='fractalrock/data/generators.RData')
 
-#ps <- fragtal(seed, pats, 4)
-#ps <- fragtal(seed, pats, 4, only=4)
+#ps <- fractal(seed, pats, 4)
+#ps <- fractal(seed, pats, 4, only=4)
 #plotReturns(ps)
+
+# Simulate order sign
+#seed <- matrix(c(13600,1,  13638,0, 13650,0,  13700,1), ncol=2, byrow=TRUE)
+#patterns <- list(
+#  pattern.1=matrix(c(0,1, 0.22,1, 0.61,0,  1,0), ncol=2, byrow=TRUE),
+#  pattern.2=matrix(c(0,0, 0.40,1, 0.63,1,  1,1), ncol=2, byrow=TRUE),
+#  pattern.3=matrix(c(0,0, 0.55,0, 0.83,0,  1,1), ncol=2, byrow=TRUE)
+#)
+#ps <- getPortfolioPrices('IBM',10, seeds=seed, patterns=patterns, date.fun=as.POSIXct)
 
