@@ -52,10 +52,11 @@ getTradingDates(end, start = NULL, obs = NULL, calendar = holidayNYSE)
   R/S value or Hurst exponent.
 }
 \examples{
-  data(sampleInitiators)
-  data(sampleGenerators)
+  #data(sampleInitiators)
+  #data(sampleGenerators)
+  data(generators)
   ps <- getPortfolioPrices('IBM', '2009-02-24',obs=10,
-    seed=sampleInitiator, patterns=sampleGenerators)
+    seeds=sampleInitiators, patterns=sampleGenerators)
 
   getTradingDates('2009-02-26', obs=10)
 }

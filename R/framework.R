@@ -43,12 +43,12 @@ getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
   dates <- getTradingDates(end, start, obs, calendar)
   if (is.null(seeds))
   {
-    data(generators)
+    data(sampleInitiators)
     seeds = sample(sampleInitiators, anylength(symbols), TRUE)
   }
   if (is.null(patterns))
   {
-    data(generators)
+    data(sampleGenerators)
     patterns = sample(sampleGenerators, anylength(symbols), TRUE)
   }
 
@@ -83,7 +83,7 @@ getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
 fractal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform')
 {
   require(xts, quietly=TRUE)
-  if ('list' %in% class(seeds)) seed <- sample(seeds, 1)
+  if ('list' %in% class(seeds)) seed <- sample(seeds, 1)[[1]]
   else seed <- seeds
 
   do.call(paste('fractal.',type, sep=''), list(seed,patterns,count,epochs,...))

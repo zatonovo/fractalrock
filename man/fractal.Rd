@@ -40,8 +40,9 @@ fractal.random(seed, patterns, count)
 }
 \author{ Brian Lee Yung Rowe }
 \examples{
-data(sampleInitiators)
-data(sampleGenerators)
+#data(sampleInitiators)
+#data(sampleGenerators)
+data(generators)
 series <- fractal(sampleInitiators, sampleGenerators, count=10)
 
 # View the results of a single iteration using the second pattern

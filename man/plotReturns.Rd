@@ -21,9 +21,10 @@ plotReturns(series, ...)
 }
 \author{ Brian Lee Yung Rowe }
 \examples{
-  data(sampleInitiators)
-  data(sampleGenerators)
-  ps <- fragtal(sampleInitiator, sampleGenerators, epochs=3)
+  #data(sampleInitiators)
+  #data(sampleGenerators)
+  data(generators)
+  ps <- fractal(sampleInitiators, sampleGenerators, epochs=3)
   plotReturns(ps)
 }
 \keyword{ ts }
