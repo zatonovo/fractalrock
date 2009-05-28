@@ -9,7 +9,7 @@
   that uses the timeDate package under the hood.
 }
 \usage{
-getPortfolioPrices(symbols, end, start = NULL, obs = NULL, calendar = holidayNYSE, ..., type = "uniform")
+getPortfolioPrices(symbols, obs = NULL, end = Sys.Date(), start = NULL, calendar = holidayNYSE, seeds = NULL, patterns = NULL, ..., type = "uniform")
 
 getTradingDates(end, start = NULL, obs = NULL, calendar = holidayNYSE)
 }
@@ -19,6 +19,8 @@ getTradingDates(end, start = NULL, obs = NULL, calendar = holidayNYSE)
   \item{start}{ The starting date of the time series. All non-business days are removed in the resulting range. Either start or obs must be set. }
   \item{obs}{ The total number of points to generate. The dates will follow a business day calendar as defined by timeDate, defaulting to NYSE. Either start or obs must be set. }
   \item{calendar}{ The business day calendar to use. Defaults to NYSE. }
+  \item{seeds}{ A list of initiators to use for generating the time series }
+  \item{patterns}{ A list of generators to use for generating the time series }
   \item{\dots}{ Additional arguments to send to the fractal generator }
   \item{type}{ The type of fractal process to use. Defaults to uniform. }
 }
@@ -28,10 +30,10 @@ getTradingDates(end, start = NULL, obs = NULL, calendar = holidayNYSE)
   in risk modeling, as a substitute for brownian motion in Monte Carlo
   simulations, and backtesting applications. Studying fractal generation of
   time series can be accomplished more directly by calling 
-  \code{\link{fragtal}}.
+  \code{\link{fractal}}.
 
   In addition to the arguments above, it is necessary to pass the appropriate
-  arguments to the the underlying fragtal call. This includes passing in a seed
+  arguments to the the underlying fractal call. This includes passing in a seed
   and generator patterns. If none are provided predefined sets will be used,
   although users of this package are encouraged to create their own initiators
   and generators.
@@ -50,7 +52,8 @@ getTradingDates(end, start = NULL, obs = NULL, calendar = holidayNYSE)
   R/S value or Hurst exponent.
 }
 \examples{
-  data(generators)
+  data(sampleInitiators)
+  data(sampleGenerators)
   ps <- getPortfolioPrices('IBM', '2009-02-24',obs=10,
     seed=sampleInitiator, patterns=sampleGenerators)
 

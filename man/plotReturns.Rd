@@ -21,7 +21,8 @@ plotReturns(series, ...)
 }
 \author{ Brian Lee Yung Rowe }
 \examples{
-  data(generators)
+  data(sampleInitiators)
+  data(sampleGenerators)
   ps <- fragtal(sampleInitiator, sampleGenerators, epochs=3)
   plotReturns(ps)
 }
