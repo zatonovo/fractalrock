@@ -134,7 +134,7 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
       else pattern <- patterns[[sample(length(patterns),1)]]
 
       iteration <- next.seeds(seed, next.seed, pattern, idx, dummy)
-      seed <- iteration$seed
+      seed <- iteration$this.seed
       next.seed <- iteration$next.seed
     }
     seed <- next.seed[order(next.seed[,1]),]
@@ -171,7 +171,7 @@ next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
   if (logLevel() > 1)
   { cat("[",epoch,".",idx,"]",sep=''); cat(" segment:",segment,"\n") }
 
-  return(list(old.seed, new.seed))
+  return(list(this.seed=old.seed, next.seed=new.seed))
 }
 
 fractal.random <- function(seed, patterns, count)

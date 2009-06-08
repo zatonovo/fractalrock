@@ -18,6 +18,8 @@ fractal(seeds, patterns, count = NULL, epochs = NULL, ..., type = "uniform")
 fractal.uniform(seed, patterns, count = NULL, epochs = NULL, origin = '1970-01-01', date.fun = as.Date, only = NULL)
 
 fractal.random(seed, patterns, count)
+
+next.seeds(old.seed, new.seed, pattern, idx, epoch)
 }
 \arguments{
   \item{seeds}{ A list of seed patterns to use for generating the time series }
@@ -30,6 +32,11 @@ fractal.random(seed, patterns, count)
   \item{only}{ Only use the nth pattern instead of randomly choosing from patterns }
   \item{...}{ Additional arguments to pass to underlying function }
   \item{type}{ The type of generation to perform. Uniform descends each level in a uniform manner (meaning all segments get replaced) whereas the random generation will randomly select segments to replace during each epoch. }
+  \item{old.seed}{(Internal) Previous seed used to generate pattern}
+  \item{new.seed}{(Internal) Next seed used to generate pattern}
+  \item{pattern}{(Internal) Available patterns to use}
+  \item{idx}{(Internal) Index of current iteration}
+  \item{epoch}{(Internal) Current epoch}
 }
 \value{
   An xts object containing a time series of values representing asset prices
