@@ -43,12 +43,12 @@ getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
   dates <- getTradingDates(end, start, obs, calendar)
   if (is.null(seeds))
   {
-    data(sampleInitiators)
+    data(generators)
     seeds = sample(sampleInitiators, anylength(symbols), TRUE)
   }
   if (is.null(patterns))
   {
-    data(sampleGenerators)
+    data(generators)
     patterns = sample(sampleGenerators, anylength(symbols), TRUE)
   }
 
@@ -105,10 +105,7 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
   origin='1970-01-01', date.fun=as.Date, only=NULL)
 {
   require(futile)
-  if (! 'list' %in% class(patterns))
-  {
-    patterns <- list(pattern.1=patterns)
-  }
+  if (! 'list' %in% class(patterns)) patterns <- list(pattern.1=patterns)
 
   # Calculate count based on size of seed and patterns
   if (! is.null(epochs))
@@ -125,6 +122,7 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
     #cat("seed.legs:",seed.legs,"; pattern.legs:",pattern.legs,"\n")
     if (logLevel() > 0) cat("Set epochs to",epochs,"\n")
   }
+  if (is.na(epochs) | is.null(epochs)) stop("Unable to calculate epochs")
 
   for (dummy in 1:epochs)
   {
@@ -135,25 +133,9 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
       if (! is.null(only)) pattern <- patterns[[only]]
       else pattern <- patterns[[sample(length(patterns),1)]]
 
-      x.delta <- seed[idx,1] - seed[idx-1,1]
-      y.delta <- seed[idx,2] - seed[idx-1,2]
-      scale <- c(x.delta, y.delta)
-      start <- c(seed[idx-1,1], seed[idx-1,2])
-
-      if (logLevel() > 1)
-      {
-        cat("[",dummy,".",idx,"]",sep=''); cat(" scale:",scale,"\n")
-        cat("[",dummy,".",idx,"]",sep=''); cat(" start:",start,"\n")
-      }
-      segment <- pattern * 
-        matrix(rep(scale, nrow(pattern)), ncol=2, byrow=TRUE) +
-        matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
-      next.seed <- rbind(next.seed[! (next.seed[,1] %in% segment[,1]), ], segment)
-      seed <- rbind(seed[! (seed[,1] %in% segment[,1]), ],
-        segment[(segment[,1] %in% seed[,1]), ])
-      seed <- seed[order(seed[,1]),]
-      if (logLevel() > 1)
-      { cat("[",dummy,".",idx,"]",sep=''); cat(" segment:",segment,"\n") }
+      iteration <- next.seeds(seed, next.seed, pattern, idx, dummy)
+      seed <- iteration$seed
+      next.seed <- iteration$next.seed
     }
     seed <- next.seed[order(next.seed[,1]),]
   }
@@ -163,6 +145,33 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
   seed <- xts(seed[,2], order.by=date.fun(seed[,1], origin=origin))
   if (use.count) seed <- tail(seed, count)
   return(seed)
+}
+
+next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
+{
+  x.delta <- old.seed[idx,1] - old.seed[idx-1,1]
+  y.delta <- old.seed[idx,2] - old.seed[idx-1,2]
+  scale <- c(x.delta, y.delta)
+  start <- c(old.seed[idx-1,1], old.seed[idx-1,2])
+
+  if (logLevel() > 1)
+  {
+    cat("[",epoch,".",idx,"]",sep=''); cat(" scale:",scale,"\n")
+    cat("[",epoch,".",idx,"]",sep=''); cat(" start:",start,"\n")
+  }
+  segment <- pattern * 
+    matrix(rep(scale, nrow(pattern)), ncol=2, byrow=TRUE) +
+    matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
+
+  # Create new seed by adding the new segment
+  new.seed <- rbind(new.seed[! (new.seed[,1] %in% segment[,1]), ], segment)
+  old.seed <- rbind(old.seed[! (old.seed[,1] %in% segment[,1]), ],
+    segment[(segment[,1] %in% old.seed[,1]), ])
+  old.seed <- old.seed[order(old.seed[,1]),]
+  if (logLevel() > 1)
+  { cat("[",epoch,".",idx,"]",sep=''); cat(" segment:",segment,"\n") }
+
+  return(list(old.seed, new.seed))
 }
 
 fractal.random <- function(seed, patterns, count)
@@ -247,11 +256,17 @@ plotReturns <- function(series, ...)
 #plotReturns(ps)
 
 # Simulate order sign
-#seed <- matrix(c(13600,1,  13638,0, 13650,0,  13700,1), ncol=2, byrow=TRUE)
-#patterns <- list(
-#  pattern.1=matrix(c(0,1, 0.22,1, 0.61,0,  1,0), ncol=2, byrow=TRUE),
-#  pattern.2=matrix(c(0,0, 0.40,1, 0.63,1,  1,1), ncol=2, byrow=TRUE),
-#  pattern.3=matrix(c(0,0, 0.55,0, 0.83,0,  1,1), ncol=2, byrow=TRUE)
+# (Incomplete)
+#microInitiators <- list(
+#  seed.1=matrix(c(600.0, 1, 602.4,-1, 603.4,-1,  610.0,-1), ncol=2,byrow=TRUE),
+#  seed.2=matrix(c(600.0,-1, 601.2,-1, 602.8, 1,  610.0, 1), ncol=2,byrow=TRUE),
+#  seed.3=matrix(c(600.0, 1, 603.1, 1, 604.2,-1,  610.0, 1), ncol=2,byrow=TRUE)
 #)
-#ps <- getPortfolioPrices('IBM',10, seeds=seed, patterns=patterns, date.fun=as.POSIXct)
+#microGenerators <- list(
+##  pattern.1=matrix(c(0, 1, 0.22, 1, 0.61,-1,  1,-1), ncol=2,byrow=TRUE),
+##  pattern.2=matrix(c(0,-1, 0.40, 1, 0.63, 1,  1, 1), ncol=2,byrow=TRUE),
+##  pattern.3=matrix(c(0,-1, 0.55,-1, 0.83,-1,  1, 1), ncol=2,byrow=TRUE),
+##  pattern.4=matrix(c(0,-1, 0.55,-1, 0.83,-1,  1, 1), ncol=2,byrow=TRUE)
+#)
+#ps <- getPortfolioPrices('IBM',10, seeds=microInitiators, patterns=microGenerators, date.fun=as.POSIXct)
 

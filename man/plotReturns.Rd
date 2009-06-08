@@ -21,8 +21,6 @@ plotReturns(series, ...)
 }
 \author{ Brian Lee Yung Rowe }
 \examples{
-  #data(sampleInitiators)
-  #data(sampleGenerators)
   data(generators)
   ps <- fractal(sampleInitiators, sampleGenerators, epochs=3)
   plotReturns(ps)
