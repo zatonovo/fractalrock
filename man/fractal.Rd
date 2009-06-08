@@ -2,6 +2,7 @@
 \alias{fractal}
 \alias{fractal.uniform}
 \alias{fractal.random}
+\alias{next.seeds}
 \title{ Create time series based on fractal generators }
 \description{
   The fractal function generates a time series of points using basic principles
