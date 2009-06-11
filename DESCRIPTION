@@ -5,7 +5,7 @@ Version: {version}
 Date: {date}
 Author: Brian Lee Yung Rowe
 Maintainer: Brian Lee Yung Rowe <r@nurometic.com>
-Depends: futile, timeDate, zoo, xts, quantmod
+Depends: R (>= 2.8.1), futile, timeDate, zoo, xts, quantmod
 Description: The basic principle driving fractal generation of time series is
   that data is generated iteratively based on increasing levels of resolution.
   The initial series is defined by a so-called initiator pattern and then 
