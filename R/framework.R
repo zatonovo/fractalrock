@@ -6,7 +6,7 @@
 # getTradingDates('2009-02-24',obs=10)
 getTradingDates <- function(end, start=NULL, obs=NULL, calendar=holidayNYSE)
 {
-  require(futile)
+  require(futile.any)
   require(timeDate, quietly=TRUE)
   if (is.null(obs) & is.null(start)) stop("Either obs or start must be set")
 
@@ -38,7 +38,7 @@ getTradingDates <- function(end, start=NULL, obs=NULL, calendar=holidayNYSE)
 getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
   calendar=holidayNYSE, seeds=NULL, patterns=NULL, ..., type='uniform')
 {
-  require(futile)
+  require(futile.any)
   # Get dates
   dates <- getTradingDates(end, start, obs, calendar)
   if (is.null(seeds))
@@ -82,6 +82,9 @@ getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
 # ps <- fractal(seed, pats, epochs=3)
 fractal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform')
 {
+  require(futile.logger)
+  logger <<- getLogger('fractalrock')
+
   require(xts, quietly=TRUE)
   if ('list' %in% class(seeds)) seed <- sample(seeds, 1)[[1]]
   else seed <- seeds
@@ -104,7 +107,6 @@ fractal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform
 fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
   origin='1970-01-01', date.fun=as.Date, only=NULL)
 {
-  require(futile)
   if (! 'list' %in% class(patterns)) patterns <- list(pattern.1=patterns)
 
   # Calculate count based on size of seed and patterns
@@ -120,7 +122,7 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
     pattern.legs <- nrow(patterns[[1]])-1
     epochs <- floor(log(count / seed.legs, base=pattern.legs)) + 1
     #cat("seed.legs:",seed.legs,"; pattern.legs:",pattern.legs,"\n")
-    if (logLevel() > 0) cat("Set epochs to",epochs,"\n")
+    logger(DEBUG, sprintf("Set epochs to",epochs,"\n"))
   }
   if (is.na(epochs) | is.null(epochs)) stop("Unable to calculate epochs")
 
@@ -154,11 +156,9 @@ next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
   scale <- c(x.delta, y.delta)
   start <- c(old.seed[idx-1,1], old.seed[idx-1,2])
 
-  if (logLevel() > 1)
-  {
-    cat("[",epoch,".",idx,"]",sep=''); cat(" scale:",scale,"\n")
-    cat("[",epoch,".",idx,"]",sep=''); cat(" start:",start,"\n")
-  }
+  logger(DEBUG, sprintf("[%s.%s] scale: %s",epoch,idx, scale))
+  logger(DEBUG, sprintf("[%s.%s] epoch: %s",epoch,idx, start))
+
   segment <- pattern * 
     matrix(rep(scale, nrow(pattern)), ncol=2, byrow=TRUE) +
     matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
@@ -168,8 +168,7 @@ next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
   old.seed <- rbind(old.seed[! (old.seed[,1] %in% segment[,1]), ],
     segment[(segment[,1] %in% old.seed[,1]), ])
   old.seed <- old.seed[order(old.seed[,1]),]
-  if (logLevel() > 1)
-  { cat("[",epoch,".",idx,"]",sep=''); cat(" segment:",segment,"\n") }
+  logger(DEBUG, sprintf("[%s.%s] segment: %s",epoch,idx,segment))
 
   return(list(this.seed=old.seed, next.seed=new.seed))
 }
