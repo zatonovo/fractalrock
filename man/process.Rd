@@ -24,9 +24,8 @@ ou.process(theta, mu = 0, sigma = 1, initial=mu, end = Sys.Date(), start = NULL,
   An xts object containing a time series of values representing asset prices
   whose evolution is defined by the given process.
 }
-\references{
-http://en.wikipedia.org/wiki/Ornstein\%E2\%80\%93Uhlenbeck_process
-}
+%% \references{
+%%}
 \author{ Brian Lee Yung Rowe }
 \examples{
 data(generators)
