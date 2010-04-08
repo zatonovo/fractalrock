@@ -28,7 +28,6 @@ ou.process(theta, mu = 0, sigma = 1, initial=mu, end = Sys.Date(), start = NULL,
 %%}
 \author{ Brian Lee Yung Rowe }
 \examples{
-data(generators)
 series <- ou.process(1, 1.2, 0.3, obs=50)
 }
 \keyword{ ts }
