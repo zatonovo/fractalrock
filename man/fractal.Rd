@@ -18,7 +18,7 @@ fractal(seeds, patterns, count = NULL, epochs = NULL, ..., type = "uniform")
 
 fractal.uniform(seed, patterns, count = NULL, epochs = NULL, origin = '1970-01-01', date.fun = as.Date, only = NULL)
 
-fractal.random(seed, patterns, count)
+fractal.random(seed, patterns, count, epochs = NULL, ...)
 
 next.seeds(old.seed, new.seed, pattern, idx, epoch)
 }

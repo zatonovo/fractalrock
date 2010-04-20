@@ -24,6 +24,14 @@ getTradingDates <- function(end, start=NULL, obs=NULL, calendar=holidayNYSE)
     start <- as.Date(end) - shimmed + 1
     dates <- timeSequence(from=start, length.out=shimmed)
     dates <- dates[isBizday(dates, holidays=calendar())]
+    if (length(dates) < obs)
+    {
+      # It turns out that there are a lot of holidays so add a few more days
+      gap <- (2 + obs - length(dates)) * 2
+      start.1 <- as.Date(dates[1] - shimmed)
+      dates.1 <- timeSequence(from=start, length.out=gap)
+      dates <- c(dates.1[isBizday(dates.1, holidays=calendar())], dates)
+    }
 
     inf <- anylength(dates) - obs + 1
     sup <- anylength(dates)
@@ -173,7 +181,7 @@ next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
   return(list(this.seed=old.seed, next.seed=new.seed))
 }
 
-fractal.random <- function(seed, patterns, count)
+fractal.random <- function(seed, patterns, count, epochs=NULL, ...)
 {
   if (! 'list' %in% class(patterns))
   {
@@ -184,7 +192,6 @@ fractal.random <- function(seed, patterns, count)
   {
     pattern <- patterns[[sample(length(patterns),1)]]
     idx <- sample((nrow(seed)-1), 1) + 1
-    #cat("Got index",idx,"\n")
 
     x.delta <- seed[idx,1] - seed[idx-1,1]
     y.delta <- seed[idx,2] - seed[idx-1,2]
@@ -195,10 +202,11 @@ fractal.random <- function(seed, patterns, count)
       matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
     if (idx <= 2)
     {
-      next.seed <- rbind(segment, seed[idx:nrow(seed),])
+      next.seed <- rbind(segment, seed[idx+1:nrow(seed),])
     }
     else if (idx == nrow(seed))
     {
+      # Last row
       next.seed <- rbind(seed[1:(idx-2),], segment)
     }
     else
