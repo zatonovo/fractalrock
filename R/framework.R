@@ -202,7 +202,7 @@ fractal.random <- function(seed, patterns, count, epochs=NULL, ...)
       matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
     if (idx <= 2)
     {
-      next.seed <- rbind(segment, seed[idx+1:nrow(seed),])
+      next.seed <- rbind(segment, seed[(idx+1):nrow(seed),])
     }
     else if (idx == nrow(seed))
     {
