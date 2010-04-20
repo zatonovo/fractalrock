@@ -130,7 +130,7 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
     pattern.legs <- nrow(patterns[[1]])-1
     epochs <- floor(log(count / seed.legs, base=pattern.legs)) + 1
     #cat("seed.legs:",seed.legs,"; pattern.legs:",pattern.legs,"\n")
-    logger(DEBUG, sprintf("Set epochs to",epochs,"\n"))
+    logger(DEBUG, sprintf("Set epochs to %s",epochs))
   }
   if (is.na(epochs) | is.null(epochs)) stop("Unable to calculate epochs")
 
@@ -181,14 +181,29 @@ next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
   return(list(this.seed=old.seed, next.seed=new.seed))
 }
 
-fractal.random <- function(seed, patterns, count, epochs=NULL, ...)
+fractal.random <- function(seed, patterns, count=NULL, epochs=NULL, 
+  origin='1970-01-01', date.fun=as.Date, only=NULL)
 {
-  if (! 'list' %in% class(patterns))
-  {
-    patterns <- list(pattern.1=patterns)
-  }
+  if (! 'list' %in% class(patterns)) patterns <- list(pattern.1=patterns)
 
-  for (dummy in 1:count)
+  # Calculate count based on size of seed and patterns
+  if (! is.null(epochs))
+  {
+    use.count <- FALSE
+    count <- (length(seed) - 1) * (length(patterns[[1]])-1)^epochs
+  }
+  else if (! is.null(count))
+  {
+    use.count <- TRUE
+    seed.legs <- nrow(seed)-1
+    pattern.legs <- nrow(patterns[[1]])-1
+    epochs <- floor(log(count / seed.legs, base=pattern.legs)) + 1
+    #cat("seed.legs:",seed.legs,"; pattern.legs:",pattern.legs,"\n")
+    logger(DEBUG, sprintf("Set epochs to %s",epochs))
+  }
+  if (is.na(epochs) | is.null(epochs)) stop("Unable to calculate epochs")
+
+  for (dummy in 1:epochs)
   {
     pattern <- patterns[[sample(length(patterns),1)]]
     idx <- sample((nrow(seed)-1), 1) + 1
@@ -215,7 +230,11 @@ fractal.random <- function(seed, patterns, count, epochs=NULL, ...)
     }
     seed <- next.seed[order(next.seed[,1]),]
   }
-  return(unique(seed))
+  # TODO: This may cause problems related to binary order sign
+  seed <- (unique(seed))
+  seed <- xts(seed[,2], order.by=date.fun(seed[,1], origin=origin))
+  if (use.count) seed <- tail(seed, count)
+  return(seed)
 }
 
 
