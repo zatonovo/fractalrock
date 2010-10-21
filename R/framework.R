@@ -296,3 +296,21 @@ plotReturns <- function(series, ...)
 #)
 #ps <- getPortfolioPrices('IBM',10, seeds=microInitiators, patterns=microGenerators, date.fun=as.POSIXct)
 
+fracret <- function(assets=10, epochs=3)
+{
+  fn <- function(x)
+  {
+    series <- fractal(seed, pats, epochs=epochs)
+    series <- Delt(series)
+    series <- series[! is.na(series) & ! is.infinite(series)]
+    series <- series - mean(series)
+  }
+  rets <- do.call(cbind, lapply(1:assets, fn))
+  names(rets) <- 1:assets
+  rets
+}
+
+interpolate.mat <- function(x, by.col)
+{
+  
+}
