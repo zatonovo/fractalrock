@@ -296,7 +296,7 @@ plotReturns <- function(series, ...)
 #)
 #ps <- getPortfolioPrices('IBM',10, seeds=microInitiators, patterns=microGenerators, date.fun=as.POSIXct)
 
-fracret <- function(assets=10, epochs=3)
+.fracret <- function(assets=10, epochs=3)
 {
   fn <- function(x)
   {
@@ -310,7 +310,7 @@ fracret <- function(assets=10, epochs=3)
   rets
 }
 
-interpolate.mat <- function(x, by.col)
+.interpolate.mat <- function(x, by.col)
 {
   
 }
