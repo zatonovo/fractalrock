@@ -29,7 +29,7 @@ Package: \tab fractalrock\cr
 Type: \tab Package\cr
 Version: \tab {version}\cr
 Date: \tab {date}\cr
-License: \tab GPL-2\cr
+License: \tab GPL-3\cr
 }
 To generate a set of asset prices, the function \code{\link{getPortfolioPrices}}is the most direct way to accomplish this. An xts object will be returned with
 one time series per 'asset' provided. In addition, the dates will be coerced
@@ -40,7 +40,7 @@ underlying \code{\link{fractal}} function. This function produces raw values
 useful for analysis of the fractal generation process.
 }
 \author{
-Brian Lee Yung Rowe <r@nurometic.com>
+Brian Lee Yung Rowe <r@zatonovo.com>
 }
 \references{
   M. Frame, B. Mandelbrot, N. Neger. Fractal Geometry. 2009.

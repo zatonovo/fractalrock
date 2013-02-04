@@ -4,8 +4,8 @@ Title: Generate fractal time series with non-normal returns distribution
 Version: {version}
 Date: {date}
 Author: Brian Lee Yung Rowe
-Maintainer: Brian Lee Yung Rowe <r@nurometic.com>
-Depends: R (>= 2.8.0), futile.any, futile.logger, timeDate, zoo, xts, quantmod
+Maintainer: Brian Lee Yung Rowe <r@zatonovo.com>
+Depends: futile.any (>= 1.3.0), futile.logger (>= 1.3.0), timeDate, quantmod
 Description: The basic principle driving fractal generation of time series is
   that data is generated iteratively based on increasing levels of resolution.
   The initial series is defined by a so-called initiator pattern and then 
@@ -14,5 +14,5 @@ Description: The basic principle driving fractal generation of time series is
   By using a set  of generators, non-repeatable time series can be produced. 
   This technique is the basis of the fractal time series process in this 
   package.
-License: GPL-2
+License: GPL-3
 LazyLoad: yes
