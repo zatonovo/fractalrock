@@ -7,7 +7,7 @@
 
 # http://www.columbia.edu/~mh2078/MCS04/MCS_framework_FEegs.pdf
 gbm(n, s0=10, mu=0.01, sigma=0.03) %as% {
-  cumprod(c(s0, exp((mu - sigma^2/2) / 252 + sigma*rnorm(n) / sqrt(252))))
+  cumprod(c(s0, exp((mu - sigma^2/2) / 252 + sigma*rnorm(n-1) / sqrt(252))))
 }
 
 wiener(n, s=10, mu=0.01, sigma=0.03) %as% {

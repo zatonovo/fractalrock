@@ -1,6 +1,7 @@
 # Generate time series data based on different generators
 # Author: Brian Lee Yung Rowe
 
+
 # Example
 # getTradingDates('2009-02-24',obs=10)
 getTradingDates <- function(end, start=NULL, obs=NULL, calendar=holidayNYSE)
@@ -152,12 +153,19 @@ plot_returns <- function(series, ...)
 #  rets
 #}
 
-#.interpolate.mat <- function(x, by.col)
-#{
-#  
-#}
 
 
+#' @examples
+#' rprices(c("A","B","C"), 10, function(n) rnorm(n))
+#' rprices(c("A","B","C"), 10, function(n) gbm(n, runif(1,10,200)))
+rprices(symbols, obs, process, end=Sys.Date(), start=NULL, calendar=holidayNYSE) %as% {
+  dates <- getTradingDates(end, start, obs, calendar)
+  n <- length(dates)
+  prices <- sapply(symbols, function(x) process(n))
+  rownames(prices) <- format(dates)
+  anynames(prices) <- symbols
+  as.xts(prices)
+}
 
 # beta_a = cov(r_a, r_m) / var(r_m)
 # cov(r_a, r_m) = beta_a * var(r_m)

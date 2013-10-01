@@ -1,3 +1,82 @@
+rinitiator(xrange=c(0,1), yrange=c(0,100)) %as% {
+  segments <- round(runif(1,1,3))
+  ymin <- round(runif(1, yrange[1], yrange[2]))
+  len <- round(runif(1,3,10))
+  ymax <- min(ymin + len, yrange[2])
+
+  mid <- runif(segments, xrange[1], xrange[2])
+  x <- c(xrange[1], mid, xrange[2])
+  x <- x[order(x)]
+  y <- round(runif(segments+2, ymin, ymax))
+  cbind(x,y)
+}
+
+rgenerator(xrange=c(0,1), yrange=c(-1,1)) %as% {
+  segments <- round(runif(1,1,2))
+
+  mid <- round(runif(segments, xrange[1], xrange[2]),digits=1)
+  x <- c(xrange[1], mid, xrange[2])
+  x <- x[order(x)]
+  y <- round(runif(segments+2, yrange[1], yrange[2]), digits=1)
+  cbind(x,y)
+}
+
+rfractal(n, initiator=rinitiator, generator=rgenerator) %as% {
+  next.seed <- this.seed <- initiator()
+  row.fn <- function(epoch, idx, max, this.seed, next.seed) {
+    if (idx >= max) return(next.seed)
+    flog.trace("[%s.%s] Generating segment", epoch,idx)
+
+    pattern <- generator()
+    iteration <- next.seeds(this.seed, next.seed, pattern, idx, epoch)
+    this.seed <- iteration$this.seed
+    next.seed <- iteration$next.seed
+    row.fn(epoch, idx+1, max, this.seed, next.seed)
+  }
+  epoch.fn <- function(epoch, this.seed, next.seed) {
+    if (nrow(this.seed) >= n) return(this.seed)
+    flog.trace("[%s] Starting new epoch with %s rows", epoch,nrow(this.seed))
+
+    next.seed <- row.fn(epoch, 2, nrow(this.seed), this.seed, next.seed)
+    this.seed <- next.seed[order(next.seed[,1]),]
+
+    epoch.fn(epoch + 1, this.seed, next.seed)
+  }
+  out <- epoch.fn(1, this.seed, next.seed)
+  out <- unique(out)
+  out[1:n,]
+}
+
+
+next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
+{
+  flog.trace("[%s.%s] old.seed:", epoch,idx)
+  flog.trace("", old.seed, capture=TRUE)
+  x.delta <- old.seed[idx,1] - old.seed[idx-1,1]
+  y.delta <- old.seed[idx,2] - old.seed[idx-1,2]
+  scale <- c(x.delta, y.delta)
+  start <- c(old.seed[idx-1,1], old.seed[idx-1,2])
+
+  flog.debug("[%s.%s] scale: %s,%s",epoch,idx, scale[1],scale[2])
+  flog.debug("[%s.%s] start: %s,%s",epoch,idx, start[1],start[2])
+
+  segment <- pattern * 
+    matrix(rep(scale, nrow(pattern)), ncol=2, byrow=TRUE) +
+    matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
+
+  # Create new seed by adding the new segment
+  new.seed <- rbind(new.seed[! (new.seed[,1] %in% segment[,1]), ], segment)
+  flog.debug('nrow(old.seed) = %s', nrow(old.seed))
+  old.seed <- rbind(old.seed[! (old.seed[,1] %in% segment[,1]), ],
+    segment[(segment[,1] %in% old.seed[,1]), ])
+  old.seed <- old.seed[order(old.seed[,1]),]
+  flog.debug('nrow(old.seed) = %s', nrow(old.seed))
+  flog.debug("segment:",segment, capture=TRUE)
+
+  return(list(this.seed=old.seed, next.seed=new.seed))
+}
+
+
 # count - total number of points to generate (will truncate to achieve exact
 # number
 # epochs - number of iterations to run. Note that the count grows quickly.
@@ -9,6 +88,8 @@
 # ps <- fractal(seed, pats, epochs=3)
 fractal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform')
 {
+  flog.warn("This function is deprecated. Use rfractal instead.")
+
   if ('list' %in% class(seeds)) seed <- sample(seeds, 1)[[1]]
   else seed <- seeds
 
@@ -30,6 +111,8 @@ fractal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform
 fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
   origin='1970-01-01', date.fun=as.Date, only=NULL)
 {
+  flog.warn("This function is deprecated. Use rfractal instead.")
+
   if (! 'list' %in% class(patterns)) patterns <- list(pattern.1=patterns)
 
   # Calculate count based on size of seed and patterns
@@ -72,33 +155,12 @@ fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
   return(seed)
 }
 
-next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
-{
-  x.delta <- old.seed[idx,1] - old.seed[idx-1,1]
-  y.delta <- old.seed[idx,2] - old.seed[idx-1,2]
-  scale <- c(x.delta, y.delta)
-  start <- c(old.seed[idx-1,1], old.seed[idx-1,2])
-
-  flog.debug("[%s.%s] scale: %s",epoch,idx, scale)
-  flog.debug("[%s.%s] epoch: %s",epoch,idx, start)
-
-  segment <- pattern * 
-    matrix(rep(scale, nrow(pattern)), ncol=2, byrow=TRUE) +
-    matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
-
-  # Create new seed by adding the new segment
-  new.seed <- rbind(new.seed[! (new.seed[,1] %in% segment[,1]), ], segment)
-  old.seed <- rbind(old.seed[! (old.seed[,1] %in% segment[,1]), ],
-    segment[(segment[,1] %in% old.seed[,1]), ])
-  old.seed <- old.seed[order(old.seed[,1]),]
-  flog.debug("[%s.%s] segment: %s",epoch,idx,segment)
-
-  return(list(this.seed=old.seed, next.seed=new.seed))
-}
 
 fractal.random <- function(seed, patterns, count=NULL, epochs=NULL, 
   origin='1970-01-01', date.fun=as.Date, only=NULL)
 {
+  flog.warn("This function is deprecated. Use rfractal instead.")
+
   if (! 'list' %in% class(patterns)) patterns <- list(pattern.1=patterns)
 
   # Calculate count based on size of seed and patterns
