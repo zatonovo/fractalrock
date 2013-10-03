@@ -152,5 +152,18 @@ polygon <- function(sides=5, by=0.1) {
   o <- rbind(xo,yo)
 
   x <- rbind(seq(0,1,by=by),0)
-  fold(1:sides, function(a,b) cbind(rotation((a-1)*theta) %*% x + o[,a], b))
+  fold(1:sides, function(a,b) cbind(b, rotation((a-1)*theta) %*% x + o[,a]))
+}
+
+#' Create random tiles
+#' @examples
+#' xs <- fold(1:4, function(a,b) tile(b), c(0,0))
+#' xs <- fold(1:4, function(a,b) tile(b), polygon(20))
+tile <- function(x=c(0,0), segments=2, pop=c(0,90,180,270)) {
+  angles <- sample(pop,segments, replace=TRUE)
+  xo <- cumsum(c(0,cos(radians(angles))))
+  yo <- cumsum(c(0,sin(radians(angles))))
+  o <- rbind(xo,yo)
+
+  fold(1:segments, function(a,b) cbind(b, rotation(angles[a]) %*% x + o[,a]))
 }
