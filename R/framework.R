@@ -1,10 +1,26 @@
 # Generate time series data based on different generators
 # Author: Brian Lee Yung Rowe
 
+DAILY <- 60 * 24
 
-# Example
-# getTradingDates('2009-02-24',obs=10)
-getTradingDates <- function(end, start=NULL, obs=NULL, calendar=holidayNYSE)
+
+#' Compatible with POSIXct
+#' @return Vector of seconds used to offset a date
+intraday_ticks <- function(period) {
+  period * 60 * (0:(DAILY/period))
+}
+
+#' @param period The date period, defaulting to 1 day (1440 minutes).
+#' Units are in minutes, so values less than 1440 will result in 
+#' intraday time steps being added.
+#' @examples
+#' getTradingDates('2009-02-24',obs=10)
+getTradingDates <- function(...) {
+  flog.info("This function is deprecated. Use trading_dates instead.")
+  trading_dates(...)
+}
+
+trading_dates <- function(end, start=NULL, obs=NULL, calendar=holidayNYSE, period=1440)
 {
   if (is.null(obs) & is.null(start)) stop("Either obs or start must be set")
 
@@ -35,16 +51,25 @@ getTradingDates <- function(end, start=NULL, obs=NULL, calendar=holidayNYSE)
     sup <- anylength(dates)
     dates <- dates[inf:sup]
   }
-  return(as.Date(dates))
+  ds <- as.Date(dates)
+  if (period == 1440) return(ds)
+  
+  ts <- lapply(ds, function(d) as.POSIXct(d) + intraday_ticks(period))
+  unique(do.call(c, ts))
 }
 
 # Generate n price series using the specified method
 # Example
 # getPortfolioPrices('TWM', '2009-02-24',obs=10, seed=seed, patterns=pats)
-getPortfolioPrices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
+getPortfolioPrices <- function(...) {
+  flog.info("This function is deprecated. Use portfolio_prices instead.")
+  portfolio_prices(...)
+}
+
+portfolio_prices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
   calendar=holidayNYSE, seeds=NULL, patterns=NULL, ..., type='uniform')
 {
-  dates <- getTradingDates(end, start, obs, calendar)
+  dates <- trading_dates(end, start, obs, calendar)
   if (is.null(seeds))
   {
     data(generators)
@@ -154,12 +179,31 @@ plot_returns <- function(series, ...)
 #}
 
 
+rintraday(symbol, obs, process, end=Sys.Date(), start=NULL, calendar=holidayNYSE, period=DAILY, ohlc=FALSE, volume=FALSE) %as% {
+  dates <- trading_dates(end, start, obs, calendar, period)
+  n <- length(dates)
+  prices <- as.xts(process(n), order.by=dates)
+  rownames(prices) <- format(dates)
+  colnames(prices) <- 'close'
+
+  if (ohlc) {
+    open <- as.numeric(prices$close[1]) + rnorm(1) # This is totally a kludge
+    prices$open <- c(open,prices$close[1:(n-1)])
+    prices$low <- pmin(prices$open,prices$close) - abs(rnorm(n, sd=ohlc))
+    prices$high <- pmax(prices$open,prices$close) + abs(rnorm(n, sd=ohlc))
+  }
+  if (volume) {
+    prices$volume <- as.integer(abs(rnorm(n, mean=volume, sd=volume/4)))
+  }
+  prices
+}
 
 #' @examples
 #' rprices(c("A","B","C"), 10, function(n) rnorm(n))
 #' rprices(c("A","B","C"), 10, function(n) gbm(n, runif(1,10,200)))
+#' ps <- rprices('CLM14', 3, function(x) ou(x, 45, 3/24), period=60)
 rprices(symbols, obs, process, end=Sys.Date(), start=NULL, calendar=holidayNYSE) %as% {
-  dates <- getTradingDates(end, start, obs, calendar)
+  dates <- trading_dates(end, start, obs, calendar)
   n <- length(dates)
   prices <- sapply(symbols, function(x) process(n))
   rownames(prices) <- format(dates)
