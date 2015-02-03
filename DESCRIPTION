@@ -26,4 +26,4 @@ Collate:
     'framework.R'
     'gbm.R'
     'ifs.R'
-    'ornstein-uhlenbeck.R'
+    'ou.R'
