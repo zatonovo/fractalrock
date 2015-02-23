@@ -34,6 +34,8 @@ Fractal time series
 
 Geometric brownian motion
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+GBM is another name for a random walk.
+
 ```R
 mygbm <- function(x) gbm(x, 40, .03/1440)
 ```
@@ -45,6 +47,9 @@ Ornstein-Uhlenbeck
 
 Daily price simulation
 ----------------------
+Any process can be used to generate prices. The rprices function attaches
+dates to the random sequence so it can be analyzed as an asset price series.
+
 ```R
 mygbm <- function(x) gbm(x, 40, .03/1440)
 ps <- rprices(mygbm, obs=100)
@@ -56,6 +61,7 @@ Generating intraday prices involves specifying a stochastic process along
 with some parameters indicating how many points to generating and how to
 map the points in the series to time. The `trading_hours` function knows
 about exchange holidays and trading hours to give a realistic price series.
+
 ```R
 th <- function(x) trading_hours(x,'cme')
 seed <- rintraday(mygbm, 60, th)
@@ -96,6 +102,7 @@ series.
 
 First we create the trading hours generator, followed by a call to 
 `rintraday` to generate the seed series.
+
 ```R
 th <- function(x) trading_hours(x,'cme')
 seed <- rintraday(mygbm, obs=60, th)
@@ -110,7 +117,9 @@ cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
 [2,]    0  1.0  0.4
 [3,]    0  0.0  1.0
 ```
+
 Finally, we generate the correlated price series.
+
 ```R
 z <- rintraday(seed, cmat)
 
