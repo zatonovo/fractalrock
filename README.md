@@ -29,11 +29,11 @@ Stochastic processes
 All price generators use a stochastic process to generate the sequence of
 random numbers.
 
-Fractal time series
-~~~~~~~~~~~~~~~~~~~
+### Fractal time series
+Mandelbrot not only pioneered fractals but also used them to investigate
+volatility and risk in financial markets.
 
-Geometric brownian motion
-~~~~~~~~~~~~~~~~~~~~~~~~~
+### Geometric brownian motion
 GBM is another name for a random walk.
 
 ```R
@@ -41,9 +41,8 @@ mygbm <- function(x) gbm(x, 40, .03/1440)
 ```
 
 
-Ornstein-Uhlenbeck
-~~~~~~~~~~~~~~~~~~
-
+### Ornstein-Uhlenbeck
+An OU process is typically used to simulate interest rates.
 
 Daily price simulation
 ----------------------
@@ -94,8 +93,8 @@ seed <- rintraday(mygbm, start='2015-01-01', end='2015-03-01', th)
 ```
 
 
-Correlated random numbers
-~~~~~~~~~~~~~~~~~~~~~~~~~
+### Correlated random numbers
+
 FractalRock now supports generating correlated random numbers. This usage
 involves simulating a seed series and then generating a set of correlated
 series.
