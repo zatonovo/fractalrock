@@ -9,6 +9,7 @@ Imports:
     lambda.r,
     lambda.tools,
     futile.logger (>= 1.3.0),
+    Matrix,
     timeDate,
     lubridate,
     xts,

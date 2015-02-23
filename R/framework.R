@@ -47,42 +47,41 @@ getTradingDates <- function(...) {
   trading_dates(...)
 }
 
-trading_dates(end, start, calendar=holidayNYSE) %::% a:a:Function:Date
-trading_dates(end, start, calendar=holidayNYSE) %as% {
-  end <- as.Date(end)
+
+trading_dates(start, end, calendar=holidayNYSE) %::% a:a:Function:Date
+trading_dates(start, end, calendar=holidayNYSE) %as% {
   start <- as.Date(start)
+  end <- as.Date(end)
   dates <- timeSequence(from=start, to=end)
-  dates <- dates[isBizday(dates, holidays=calendar())]
+  dates <- dates[isBizday(dates, holidays=calendar(dates))]
   as.Date(dates)
 }
 
-trading_dates(end, obs, calendar=holidayNYSE) %::% a:numeric:Function:Date
-trading_dates(end, obs, calendar=holidayNYSE) %as% {
+trading_dates(start, obs, calendar=holidayNYSE) %::% a:numeric:Function:Date
+trading_dates(start, obs, calendar=holidayNYSE) %as% {
+  start <- as.Date(start)
   # This is to get enough dates to account for holidays and weekends
-  shimmed <- ceiling(obs * 1.45)
-  start <- as.Date(end) - shimmed + 1
+  shimmed <- ceiling(obs * 2)
   dates <- timeSequence(from=start, length.out=shimmed)
-  dates <- dates[isBizday(dates, holidays=calendar())]
-  if (length(dates) < obs)
-  {
-    # It turns out that there are a lot of holidays so add a few more days
-    gap <- (2 + obs - length(dates)) * 2
-    start.1 <- as.Date(dates[1] - shimmed)
-    dates.1 <- timeSequence(from=start, length.out=gap)
-    dates <- c(dates.1[isBizday(dates.1, holidays=calendar())], dates)
-  }
+  dates <- as.Date(dates[isBizday(dates, holidays=calendar(dates))])
+  dates <- dates[dates >= start]
+  dates <- dates[1:obs]
+}
 
-  inf <- anylength(dates) - obs + 1
-  sup <- anylength(dates)
-  dates <- dates[inf:sup]
-  as.Date(dates)
+trading_dates(start, obs, period, hours.fn) %::% a:numeric:numeric:Function:POSIXt
+trading_dates(start, obs, period=1, hours.fn) %as% {
+  dates <- trading_dates(start, obs, hours.fn)
+  hours <- hours.fn(dates)
+  ts <- lapply(dates, 
+    function(d) as.POSIXct(d) + intraday_ticks(period, hours[d]))
+  unique(do.call(c, ts))
 }
 
 # th <- function(x) trading_hours(x,'cme')
 # trading_dates('2014-06-30','2014-01-01',5, th)
-trading_dates(end, start, period, hours.fn) %::% a:a:numeric:Function:Date
-trading_dates(end, start, period, hours.fn) %as% {
-  dates <- trading_dates(end, start, hours.fn)
+trading_dates(start, end, period, hours.fn) %::% a:a:numeric:Function:POSIXt
+trading_dates(start, end, period=1, hours.fn) %as% {
+  dates <- trading_dates(start, end, hours.fn)
   hours <- hours.fn(dates)
   ts <- lapply(dates, 
     function(d) as.POSIXct(d) + intraday_ticks(period, hours[d]))
