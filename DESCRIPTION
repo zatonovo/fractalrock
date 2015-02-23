@@ -5,11 +5,13 @@ Version: 1.3.0
 Date: 2015-01-28
 Author: Brian Lee Yung Rowe
 Maintainer: Brian Lee Yung Rowe <r@zatonovo.com>
-Depends:
+Imports:
     lambda.r,
     lambda.tools,
     futile.logger (>= 1.3.0),
     timeDate,
+    lubridate,
+    xts,
     quantmod
 Description: The basic principle driving fractal generation of time series is
     that data is generated iteratively based on increasing levels of resolution.
@@ -27,3 +29,4 @@ Collate:
     'gbm.R'
     'ifs.R'
     'ou.R'
+    'intraday.R'
