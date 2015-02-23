@@ -109,26 +109,28 @@ intraday_ticks <- function(period, hours) {
 
 
 
-holidays(ds,exchange) %::% Date: character: Date
-holidays(ds,'cbt') %as% as.Date(holidayNYSE(unique(year(ds))))
-holidays(ds,'cme') %as% as.Date(holidayNYSE(unique(year(ds))))
-holidays(ds,'eux') %as% as.Date(holidayNYSE(unique(year(ds))))
-holidays(ds,'nyse') %as% as.Date(holidayNYSE(unique(year(ds))))
-holidays(ds,'nasdaq') %as% as.Date(holidayNYSE(unique(year(ds))))
+holidays(exchange) %::% character: Function
+holidays('cbt') %as% function(ys) as.Date(holidayNYSE(ys))
+holidays('cme') %as% function(ys) as.Date(holidayNYSE(ys))
+holidays('eux') %as% function(ys) as.Date(holidayNYSE(ys))
+holidays('nyse') %as% function(ys) as.Date(holidayNYSE(ys))
+holidays('nsdq') %as% function(ys) as.Date(holidayNYSE(ys))
+
 
 # Ignore short trading days for now
 trading_hours(ds,exchange) %::% timeDate: character: xts
 trading_hours(ds,exchange) %as% trading_hours(as.Date(ds), exchange)
 
 trading_hours(ds,exchange) %::% Date: character: xts
-trading_hours(ds,'cbt') %as% trading_hours(ds,c(23,22.25), holidays(ds,'cbt'))
-trading_hours(ds,'cme') %as% trading_hours(ds,c(23,22.25), holidays(ds,'cme'))
-trading_hours(ds,'eux') %as% trading_hours(ds,c(6.833,21), holidays(ds,'eux'))
-trading_hours(ds,'nyse') %as% trading_hours(ds,c(14.5,21), holidays(ds,'nyse'))
-trading_hours(ds,'nsdq') %as% trading_hours(ds,c(14.5,21), holidays(ds,'nsdq'))
+trading_hours(ds,'cbt') %as% trading_hours(ds,c(23,22.25), holidays('cbt'))
+trading_hours(ds,'cme') %as% trading_hours(ds,c(23,22.25), holidays('cme'))
+trading_hours(ds,'eux') %as% trading_hours(ds,c(6.833,21), holidays('eux'))
+trading_hours(ds,'nyse') %as% trading_hours(ds,c(14.5,21), holidays('nyse'))
+trading_hours(ds,'nsdq') %as% trading_hours(ds,c(14.5,21), holidays('nsdq'))
 
-trading_hours(dates, hours, holidays) %::% Date: numeric: Date: xts
-trading_hours(dates, hours, holidays) %as% {
+trading_hours(dates, hours, holiday.fn) %::% Date: numeric: Function: xts
+trading_hours(dates, hours, holiday.fn) %as% {
+  holidays <- holiday.fn(unique(years))
   fn <- function(d) {
     if (d %in% holidays) c(NA,NA)
     else hours

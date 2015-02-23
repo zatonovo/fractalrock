@@ -2,17 +2,21 @@
 # Author: Brian Lee Yung Rowe
 
 #' @examples
-#' rprices(c("A","B","C"), 10, function(n) rnorm(n))
-#' rprices(c("A","B","C"), 10, function(n) gbm(n, runif(1,10,200)))
-#' ps <- rprices('CLM14', 3, function(x) ou(x, 45, 3/24), period=60)
-rprices(symbols, obs, process, end=Sys.Date(), start=NULL, calendar=holidayNYSE) %as% {
-  dates <- trading_dates(end, start, obs, calendar)
+#' mygbm <- function(x) gbm(x, 40, .03/1440)
+#' ps <- rprices(mygbm, obs=100)
+rprices(process, start, ohlc, volume, ...) %::% Function:.:logical:logical:...:xts
+rprices(process, start=Sys.Date(), ohlc=FALSE, volume=FALSE, ...) %as% {
+  dates <- trading_dates(start=start, ...)
   n <- length(dates)
-  prices <- sapply(symbols, function(x) process(n))
-  rownames(prices) <- format(dates)
-  anynames(prices) <- symbols
-  as.xts(prices)
+  prices <- as.xts(process(n), order.by=dates)
+  #rownames(prices) <- format(dates)
+  colnames(prices) <- 'close'
+
+  if (ohlc) prices <- .add_ohlc(prices, ohlc)
+  if (volume) prices <- .add_volume(prices, volume)
+  prices
 }
+
 
 # beta_a = cov(r_a, r_m) / var(r_m)
 # cov(r_a, r_m) = beta_a * var(r_m)
@@ -53,7 +57,7 @@ trading_dates(start, end, calendar=holidayNYSE) %as% {
   start <- as.Date(start)
   end <- as.Date(end)
   dates <- timeSequence(from=start, to=end)
-  dates <- dates[isBizday(dates, holidays=calendar(dates))]
+  dates <- dates[isBizday(dates, holidays=calendar(unique(year(dates))))]
   as.Date(dates)
 }
 
@@ -63,7 +67,7 @@ trading_dates(start, obs, calendar=holidayNYSE) %as% {
   # This is to get enough dates to account for holidays and weekends
   shimmed <- ceiling(obs * 2)
   dates <- timeSequence(from=start, length.out=shimmed)
-  dates <- as.Date(dates[isBizday(dates, holidays=calendar(dates))])
+  dates <- as.Date(dates[isBizday(dates, holidays=calendar(unique(year(dates))))])
   dates <- dates[dates >= start]
   dates <- dates[1:obs]
 }
