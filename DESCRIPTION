@@ -1,8 +1,8 @@
 Package: fractalrock
 Type: Package
 Title: Generate fractal time series with non-normal returns distribution
-Version: 1.3.0
-Date: 2015-01-28
+Version: 1.3.1
+Date: 2016-03-28
 Author: Brian Lee Yung Rowe
 Maintainer: Brian Lee Yung Rowe <r@zatonovo.com>
 Imports:

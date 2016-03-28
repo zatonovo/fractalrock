@@ -27,8 +27,8 @@
 \tabular{ll}{
 Package: \tab fractalrock\cr
 Type: \tab Package\cr
-Version: \tab 1.3.0\cr
-Date: \tab 2015-01-28\cr
+Version: \tab 1.3.1\cr
+Date: \tab 2016-03-28\cr
 License: \tab GPL-3\cr
 }
 To generate a set of asset prices, the function \code{\link{getPortfolioPrices}}is the most direct way to accomplish this. An xts object will be returned with
