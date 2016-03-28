@@ -41,17 +41,19 @@ rprices(beta, var=252) %as% {
 # v <- t(cd) %*% z
 
 
-#' @param period The date period, defaulting to 1 day (1440 minutes).
-#' Units are in minutes, so values less than 1440 will result in 
-#' intraday time steps being added.
-#' @examples
-#' getTradingDates('2009-02-24',obs=10)
 getTradingDates <- function(...) {
   flog.info("This function is deprecated. Use trading_dates instead.")
   trading_dates(...)
 }
 
 
+#' Generate trading dates with a given calendar
+#'
+#' @param period The date period, defaulting to 1 day (1440 minutes).
+#' Units are in minutes, so values less than 1440 will result in 
+#' intraday time steps being added.
+#' @examples
+#' getTradingDates('2009-02-24',obs=10)
 trading_dates(start, end, calendar=holidayNYSE) %::% a:a:Function:Date
 trading_dates(start, end, calendar=holidayNYSE) %as% {
   start <- as.Date(start)
@@ -82,7 +84,7 @@ trading_dates(start, obs, period=1, hours.fn) %as% {
 }
 
 # th <- function(x) trading_hours(x,'cme')
-# trading_dates('2014-06-30','2014-01-01',5, th)
+# trading_dates('2014-06-30','2014-01-01', 5, th)
 trading_dates(start, end, period, hours.fn) %::% a:a:numeric:Function:POSIXt
 trading_dates(start, end, period=1, hours.fn) %as% {
   dates <- trading_dates(start, end)

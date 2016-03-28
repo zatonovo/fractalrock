@@ -15,7 +15,7 @@ DAILY <- 60 * 24
 #' x <- rintraday(myou, obs=60)
 
 #' mygbm <- function(x) gbm(x, 40, .03/1440)
-#' y <- rintraday(mygbm, start='2014-01-01', end='2014-06-30', hours.fn=th)
+#' y <- rintraday(mygbm, start='2014-01-01', end='2014-06-30', period=5, hours.fn=th)
 rintraday(process, start, ohlc, volume, ...) %::% Function:.:logical:logical:...:xts
 rintraday(process, start=Sys.Date(), ohlc=FALSE, volume=FALSE, ...) %as% {
   dates <- trading_dates(start=start, ...)
@@ -35,7 +35,7 @@ rintraday(process, start=Sys.Date(), ohlc=FALSE, volume=FALSE, ...) %as% {
 #' @examples
 #' th <- function(x) trading_hours(x,'cme')
 #' mygbm <- function(x) gbm(x, 40, .03/1440)
-#' seed <- rintraday(mygbm, obs=60, th)
+#' seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
 #' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
 #' z <- rintraday(seed, cmat)
 rintraday(series, rho) %::% xts : matrix : xts
@@ -60,7 +60,7 @@ rintraday(series, rho) %as% {
 #' @examples
 #' th <- function(x) trading_hours(x,'cme')
 #' mygbm <- function(x) gbm(x, 40, .03/1440)
-#' seed <- rintraday(mygbm, obs=60, th)
+#' seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
 #' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
 #' z <- rintraday(seed, cmat, ohlc=1, volume=100)
 rintraday(series, rho, ohlc, volume) %::% xts : matrix : . : . : list
