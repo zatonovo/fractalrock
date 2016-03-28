@@ -130,7 +130,7 @@ trading_hours(ds,'nsdq') %as% trading_hours(ds,c(14.5,21), holidays('nsdq'))
 
 trading_hours(dates, hours, holiday.fn) %::% Date: numeric: Function: xts
 trading_hours(dates, hours, holiday.fn) %as% {
-  holidays <- holiday.fn(unique(years))
+  holidays <- holiday.fn(unique(year(dates)))
   fn <- function(d) {
     if (d %in% holidays) c(NA,NA)
     else hours

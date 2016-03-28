@@ -74,7 +74,7 @@ trading_dates(start, obs, calendar=holidayNYSE) %as% {
 
 trading_dates(start, obs, period, hours.fn) %::% a:numeric:numeric:Function:POSIXt
 trading_dates(start, obs, period=1, hours.fn) %as% {
-  dates <- trading_dates(start, obs, hours.fn)
+  dates <- trading_dates(start, obs)
   hours <- hours.fn(dates)
   ts <- lapply(dates, 
     function(d) as.POSIXct(d) + intraday_ticks(period, hours[d]))
@@ -85,7 +85,7 @@ trading_dates(start, obs, period=1, hours.fn) %as% {
 # trading_dates('2014-06-30','2014-01-01',5, th)
 trading_dates(start, end, period, hours.fn) %::% a:a:numeric:Function:POSIXt
 trading_dates(start, end, period=1, hours.fn) %as% {
-  dates <- trading_dates(start, end, hours.fn)
+  dates <- trading_dates(start, end)
   hours <- hours.fn(dates)
   ts <- lapply(dates, 
     function(d) as.POSIXct(d) + intraday_ticks(period, hours[d]))
@@ -143,7 +143,11 @@ getPortfolioPrices <- function(...) {
 portfolio_prices <- function(symbols, obs=NULL, end=Sys.Date(), start=NULL,
   calendar=holidayNYSE, seeds=NULL, patterns=NULL, ..., type='uniform')
 {
-  dates <- trading_dates(end, start, obs, calendar)
+  if (is.null(obs)) {
+    dates <- trading_dates(start, end, calendar)
+  } else {
+    dates <- trading_dates(start, obs, calendar)
+  }
   if (is.null(seeds))
   {
     data(generators)

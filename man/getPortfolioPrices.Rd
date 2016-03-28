@@ -53,10 +53,10 @@ getTradingDates(end, start = NULL, obs = NULL, calendar = holidayNYSE)
 }
 \examples{
   data(generators)
-  ps <- getPortfolioPrices('IBM', '2009-02-24',obs=10,
+  ps <- portfolio_prices('IBM', '2009-02-24',obs=10,
     seeds=sampleInitiators, patterns=sampleGenerators)
 
-  getTradingDates('2009-02-26', obs=10)
+  trading_dates('2009-02-26', obs=10)
 }
 \keyword{ ts }
 \keyword{ math }
