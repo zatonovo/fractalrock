@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/zatonovo/fractalrock.png)](https://travis-ci.org/zatonovo/fractalrock)
+
 FractalRock
 ===========
 Asset price simulation using fractals and other approaches. 
