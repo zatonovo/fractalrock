@@ -21,7 +21,7 @@ An xts object with either obs rows or points in the range
 \description{
 This function will construct a portfolio of asset returns based on the time
 range specified or the number of 'observations' requested. The resulting time
-series will be based on the specified calendar, as defined by getTradingDates
+series will be based on the specified calendar, as defined by trading_dates
 that uses the timeDate package under the hood.
 }
 \section{Usage}{
@@ -44,7 +44,7 @@ and generator patterns. If none are provided predefined sets will be used,
 although users of this package are encouraged to create their own initiators
 and generators.
 
-The getTradingDates function is a utility to generate proper business days for
+The trading_dates function is a utility to generate proper business days for
 a given calendar. This is used to be compatible with other applications that
 load actual asset data.
 }

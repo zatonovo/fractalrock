@@ -12,6 +12,9 @@ intraday time steps being added.}
 Generate trading dates with a given calendar
 }
 \examples{
-getTradingDates('2009-02-24',obs=10)
+trading_dates('2009-02-24',obs=10)
+
+th <- function(x) trading_hours(x,'cme')
+trading_dates('2014-06-30','2014-01-01', 5, th)
 }
 
