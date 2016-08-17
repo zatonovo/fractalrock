@@ -10,6 +10,7 @@
 #' @author Brian Lee Yung Rowe
 #' @keywords math
 #' @examples
+#' library(lambda.tools)
 #' # Create an instance with 12 iterations
 #' x <- rbind(seq(0,1, by=0.05),0)
 #' xn <- fold(1:12, function(a,b) heighway(b), x)
@@ -40,6 +41,7 @@ heighway <- function(x) {
 #' @keywords math
 #' @seealso \code{\link{sierpinski3}} \code{\link{sierpinski4}}
 #' @examples
+#' library(lambda.tools)
 #' x <- polygon(5)
 #' xn <- fold(1:5, function(a,b) sierpinski5(b), x)
 #
@@ -68,6 +70,7 @@ sierpinski5 <- function(x) {
 #' @keywords math
 #' @seealso \code{\link{sierpinski3}} \code{\link{sierpinski5}}
 #' @examples
+#' library(lambda.tools)
 #' x <- polygon(4)
 #' xn <- fold(1:5, function(a,b) sierpinski4(b), x)
 #
@@ -91,6 +94,7 @@ sierpinski4 <- function(x) {
 #' @keywords math
 #' @seealso \code{\link{sierpinski4}} \code{\link{sierpinski5}}
 #' @examples
+#' library(lambda.tools)
 #' x <- polygon(3)
 #' xn <- fold(1:5, function(a,b) sierpinski3(b), x)
 #
@@ -161,6 +165,7 @@ polygon <- function(sides=5, by=0.1) {
 #' @param segments Number of segments to create
 #' @param pop Population to sample angles from
 #' @examples
+#' library(lambda.tools)
 #' xs <- fold(1:4, function(a,b) tile(b), c(0,0))
 #' xs <- fold(1:4, function(a,b) tile(b), polygon(20))
 tile <- function(x=c(0,0), segments=2, pop=c(0,90,180,270)) {
