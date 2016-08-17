@@ -87,7 +87,7 @@ rprices(beta, var=252) %as% {
 #' trading_dates('2009-02-24',obs=10)
 #'
 #' th <- function(x) trading_hours(x,'cme')
-#' trading_dates('2014-06-30','2014-01-01', 5, th)
+#' trading_dates('2014-01-01','2014-03-31', 5, th)
 trading_dates(start, end, calendar=holidayNYSE) %::% a:a:Function:Date
 trading_dates(start, end, calendar=holidayNYSE) %as% {
   start <- as.Date(start)
@@ -127,8 +127,7 @@ trading_dates(start, obs, period=1, hours.fn) %as% {
   unique(do.call(c, ts))
 }
 
-# th <- function(x) trading_hours(x,'cme')
-# trading_dates('2014-06-30','2014-01-01', 5, th)
+# For intraday times
 trading_dates(start, end, period, hours.fn) %::% a:a:numeric:Function:POSIXt
 trading_dates(start, end, period=1, hours.fn) %as% {
   dates <- trading_dates(start, end)
