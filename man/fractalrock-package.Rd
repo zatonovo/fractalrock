@@ -23,13 +23,13 @@ can be produced. This technique is the basis of the fractal time series
 process in this package.
 
 To generate a set of asset prices, the function 
-\code{\link{getPortfolioPrices}}is the most direct way to accomplish this.
+\code{\link{rprices}}is the most direct way to accomplish this.
 An xts object will be returned with one time series per 'asset' provided.
 In addition, the dates will be coerced
 to fit a given business day calendar based on timeDate.
 
 Investigation into fractals via this package is best accomplished 
-by calling the underlying \code{\link{fractal}} function.
+by calling the underlying \code{\link{rfractal}} function.
 This function produces raw values
 useful for analysis of the fractal generation process.
 

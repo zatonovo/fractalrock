@@ -21,7 +21,7 @@ seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
 cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
 z <- rintraday(seed, cmat)
 
-Create correlated intraday OHLC bars with optional volume.
+# Create correlated intraday OHLC bars with optional volume.
 seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
 cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
 z <- rintraday(seed, cmat, ohlc=1, volume=100)

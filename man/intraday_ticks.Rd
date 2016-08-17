@@ -8,6 +8,8 @@ intraday_ticks(period, hours)
 }
 \arguments{
 \item{period}{In minutes}
+
+\item{hours}{Hours of operation for exchange}
 }
 \value{
 Vector of seconds used to offset a date. Compatible with POSIXct

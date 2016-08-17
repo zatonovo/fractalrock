@@ -6,6 +6,13 @@
 \usage{
 tile(x = c(0, 0), segments = 2, pop = c(0, 90, 180, 270))
 }
+\arguments{
+\item{x}{Initial starting point}
+
+\item{segments}{Number of segments to create}
+
+\item{pop}{Population to sample angles from}
+}
 \description{
 Create random tiles
 }
