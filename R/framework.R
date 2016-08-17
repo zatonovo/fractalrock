@@ -2,7 +2,7 @@
 #'
 #' This function will construct a portfolio of asset returns based on the time
 #' range specified or the number of 'observations' requested. The resulting time
-#' series will be based on the specified calendar, as defined by getTradingDates
+#' series will be based on the specified calendar, as defined by trading_dates
 #' that uses the timeDate package under the hood.
 #'
 #' @section Usage:
@@ -22,7 +22,7 @@
 #' although users of this package are encouraged to create their own initiators
 #' and generators.
 #'
-#' The getTradingDates function is a utility to generate proper business days for
+#' The trading_dates function is a utility to generate proper business days for
 #' a given calendar. This is used to be compatible with other applications that
 #' load actual asset data.
 #'
@@ -84,7 +84,10 @@ rprices(beta, var=252) %as% {
 #' intraday time steps being added.
 #'
 #' @examples
-#' getTradingDates('2009-02-24',obs=10)
+#' trading_dates('2009-02-24',obs=10)
+#'
+#' th <- function(x) trading_hours(x,'cme')
+#' trading_dates('2014-06-30','2014-01-01', 5, th)
 trading_dates(start, end, calendar=holidayNYSE) %::% a:a:Function:Date
 trading_dates(start, end, calendar=holidayNYSE) %as% {
   start <- as.Date(start)

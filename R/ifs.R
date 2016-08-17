@@ -54,7 +54,7 @@ heighway <- function(x) {
 sierpinski5 <- function(x) {
   m <- matrix(c(0.382,0, 0,0.382), nrow=2)
   o <- matrix(c(0,0, 0.618,0, 0.809,0.588, 0.309,0.951, -0.191,0.588), nrow=2)
-  fold(o, function(a,b) cbind(m %*% x + a, b))
+  fold(o, function(a,b) cbind(m %*% x + a, b), NULL)
 }
 
 #' Generate the Sierpinski Carpet
@@ -78,7 +78,7 @@ sierpinski5 <- function(x) {
 sierpinski4 <- function(x) {
   m <- matrix(c(1/3,0, 0,1/3), nrow=2)
   o <- matrix(c(0,0, 0,1/3, 0,2/3, 1/3,0, 1/3,2/3, 2/3,0, 2/3,1/3, 2/3,2/3), nrow=2)
-  fold(o, function(a,b) cbind(m %*% x + a, b))
+  fold(o, function(a,b) cbind(m %*% x + a, b), NULL)
 }
 
 #' Generate the Sierpinski Gasket
@@ -102,7 +102,7 @@ sierpinski4 <- function(x) {
 sierpinski3 <- function(x) {
   m <- matrix(c(0.5,0, 0,0.5), nrow=2)
   o <- matrix(c(0,0, .5,0, .25,sqrt(3)/4), nrow=2)
-  fold(o, function(a,b) cbind(m %*% x + a, b))
+  fold(o, function(a,b) cbind(m %*% x + a, b), NULL)
 }
 
 
@@ -174,5 +174,5 @@ tile <- function(x=c(0,0), segments=2, pop=c(0,90,180,270)) {
   yo <- cumsum(c(0,sin(radians(angles))))
   o <- rbind(xo,yo)
 
-  fold(1:segments, function(a,b) cbind(b, rotation(angles[a]) %*% x + o[,a]))
+  fold(1:segments, function(a,b) cbind(b,rotation(angles[a]) %*% x+o[,a]), NULL)
 }
