@@ -14,7 +14,7 @@
 #' in risk modeling, as a substitute for brownian motion in Monte Carlo
 #' simulations, and backtesting applications. Studying fractal generation of
 #' time series can be accomplished more directly by calling 
-#' \code{\link{fractal}}.
+#' \code{\link{rfractal}}.
 #'
 #' In addition to the arguments above, it is necessary to pass the appropriate
 #' arguments to the the underlying fractal call. This includes passing in a seed
@@ -148,9 +148,10 @@ trading_dates(start, end, period=1, hours.fn) %as% {
 #' @param \dots Additional arguments to pass to plot
 plot_returns <- function(series, ...)
 {
+  ret <- series[-1] / series[-length(series)] - 1
   o.par <- par(mfrow=c(2,1), mar=c(3.1, 2.1, 2.1, 1.1))
   plot(series, type='l', main='Prices',...)
-  plot(Delt(series), main='Returns')
+  plot(ret, main='Returns')
   par(o.par)
   invisible(series)
 }

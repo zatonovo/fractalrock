@@ -14,6 +14,8 @@ Imports:
     Matrix,
     lubridate,
     xts
+Suggests:
+    testit
 Description: The basic principle driving fractal generation of time series is
     that data is generated iteratively based on increasing levels of resolution.
     The initial series is defined by a so-called initiator pattern and then

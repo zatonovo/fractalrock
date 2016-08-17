@@ -1,7 +1,5 @@
 # :vim set ft=R
 
-DAILY <- 60 * 24
-
 
 #' Simulate intraday prices
 #'
@@ -23,7 +21,7 @@ DAILY <- 60 * 24
 #' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
 #' z <- rintraday(seed, cmat)
 #'
-#' Create correlated intraday OHLC bars with optional volume.
+#' # Create correlated intraday OHLC bars with optional volume.
 #' seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
 #' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
 #' z <- rintraday(seed, cmat, ohlc=1, volume=100)
@@ -93,6 +91,7 @@ rintraday(series, rho, ohlc=FALSE, volume=FALSE) %as% {
 #' Create intraday ticks
 #'
 #' @param period In minutes
+#' @param hours Hours of operation for exchange
 #' @return Vector of seconds used to offset a date. Compatible with POSIXct
 intraday_ticks <- function(period, hours) {
   if (all(is.na(hours))) return(numeric())

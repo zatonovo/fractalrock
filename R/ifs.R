@@ -156,6 +156,10 @@ polygon <- function(sides=5, by=0.1) {
 }
 
 #' Create random tiles
+#'
+#' @param x Initial starting point
+#' @param segments Number of segments to create
+#' @param pop Population to sample angles from
 #' @examples
 #' xs <- fold(1:4, function(a,b) tile(b), c(0,0))
 #' xs <- fold(1:4, function(a,b) tile(b), polygon(20))
