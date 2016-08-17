@@ -156,7 +156,7 @@ polygon <- function(sides=5, by=0.1) {
   o <- rbind(xo,yo)
 
   x <- rbind(seq(0,1,by=by),0)
-  fold(1:sides, function(a,b) cbind(b, rotation((a-1)*theta) %*% x + o[,a]))
+  fold(1:sides, function(a,b) cbind(b, rotation((a-1)*theta) %*% x+o[,a]), NULL)
 }
 
 #' Create random tiles

@@ -49,10 +49,10 @@ rintraday(series, rho) %as% {
   u <- mean(series)
   s <- sd(series)
   num.cols <- ncol(rho) - 1
-  r <- cbind((series - u)/s, 
+  r <- cbind(as.matrix((series - u)/s), 
     matrix(rnorm(nrow(series) * num.cols), ncol=num.cols))
   rc <- r %*% cd
-  out <- as.xts(u + rc * s, order.by=index(series))
+  out <- xts(u + rc * s, order.by=index(series))
   colnames(out) <- colnames(rho)
   out
 }

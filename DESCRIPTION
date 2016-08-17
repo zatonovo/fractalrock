@@ -13,7 +13,8 @@ Imports:
     futile.logger (>= 1.3.0),
     Matrix,
     lubridate,
-    xts
+    xts,
+    zoo
 Suggests:
     testit
 Description: The basic principle driving fractal generation of time series is
