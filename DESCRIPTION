@@ -13,8 +13,7 @@ Imports:
     futile.logger (>= 1.3.0),
     Matrix,
     lubridate,
-    xts,
-    quantmod
+    xts
 Description: The basic principle driving fractal generation of time series is
     that data is generated iteratively based on increasing levels of resolution.
     The initial series is defined by a so-called initiator pattern and then
@@ -27,8 +26,10 @@ License: GPL-3
 LazyLoad: yes
 Collate:
     'fractal.R'
+    'fractalrock-package.R'
     'framework.R'
     'gbm.R'
     'ifs.R'
     'ou.R'
     'intraday.R'
+RoxygenNote: 5.0.1

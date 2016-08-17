@@ -40,7 +40,7 @@
 #' @aliases fractalrock-package fractalrock
 #' @docType package
 #' @exportPattern "^[^\\.]"
-#' @import  
+#' @import utils lambda.r lambda.tools futile.logger Matrix lubridate xts
 #' @author Brian Lee Yung Rowe <r@@zatonovo.com>
 #' @keywords package ts math
 #' @references M. Frame, B. Mandelbrot, N. Neger. Fractal Geometry. 2009.

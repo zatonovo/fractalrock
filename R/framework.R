@@ -55,7 +55,7 @@ rprices(process, start=Sys.Date(), ohlc=FALSE, volume=FALSE, ...) %as% {
 # beta_a = cov(r_a, r_m) / var(r_m)
 # cov(r_a, r_m) = beta_a * var(r_m)
 # cor(r_a, r_m) = cov(r_a, r_m) / (sd(r_a) * sd(r_m))
-#' Generate a random vector based on a time period and betas
+# Generate a random vector based on a time period and betas
 rprices(beta, var=252) %as% {
   n <- 1 + length(beta)
   m <- matrix(rep(0,n^2), nrow=n)
