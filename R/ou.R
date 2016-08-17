@@ -1,5 +1,4 @@
-# References
-#   http://en.wikipedia.org/wiki/Uhlenbeck-Ornstein_process
+# Deprecated
 ou.process <- function(theta, mu=0, sigma=1, initial=mu,
   end=Sys.Date(), start=NULL, obs=NULL)
 {
@@ -12,6 +11,11 @@ ou.process <- function(theta, mu=0, sigma=1, initial=mu,
   xts(series + noise, order.by=dates)
 }
 
+#' Ornstein-Uhlenbeck process
+#'
+#' @name ou
+#' @param n Number of samples to generate
+#' @param s Initial value
 #' @param lambda The shock, in annualized terms
 #' @param mu The mean-reverting value
 #' @param sigma The annualized standard deviation of the noise term

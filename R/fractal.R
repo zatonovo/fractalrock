@@ -1,26 +1,25 @@
-rinitiator(xrange=c(0,1), yrange=c(0,100)) %as% {
-  segments <- round(runif(1,1,3))
-  ymin <- round(runif(1, yrange[1], yrange[2]))
-  len <- round(runif(1,3,10))
-  ymax <- min(ymin + len, yrange[2])
-
-  mid <- runif(segments, xrange[1], xrange[2])
-  x <- c(xrange[1], mid, xrange[2])
-  x <- x[order(x)]
-  y <- round(runif(segments+2, ymin, ymax))
-  cbind(x,y)
-}
-
-rgenerator(xrange=c(0,1), yrange=c(-1,1)) %as% {
-  segments <- round(runif(1,1,2))
-
-  mid <- round(runif(segments, xrange[1], xrange[2]),digits=1)
-  x <- c(xrange[1], mid, xrange[2])
-  x <- x[order(x)]
-  y <- round(runif(segments+2, yrange[1], yrange[2]), digits=1)
-  cbind(x,y)
-}
-
+#' Create time series based on fractal generators 
+#'
+#' The fractal function generates a time series of points using basic principles
+#' of fractal patterns. Fractal generation can be used to simulate a time series
+#' of asset prices, which has been shown to better reflect the distribution of
+#' returns than using a Gaussian random walk. Any number of points can be
+#' generated based on specifying the total count or by running over a number of
+#' epochs. The range of the data is defined by the given seed for the generation
+#' plus the available patterns.
+#'
+#' @section Usage:
+#' rfractal(n, initiator=rinitiator, generator=rgenerator)
+#'
+#' @references
+#' M. Frame, B. Mandelbrot, N. Neger. Fractal Geometry. 2009.
+#' http://classes.yale.edu/fractals/
+#'
+#' @name rfractal
+#' @param n Number of samples to generate
+#' @param initiator The initiator function. Defaults to \code{\link{rinitiator}}
+#' @param generator The generator function. Defaults to \code{\link{rgenerator}}
+#' @return An xts object containing a time series of values representing asset prices
 rfractal(n, initiator=rinitiator, generator=rgenerator) %as% {
   next.seed <- this.seed <- initiator()
   row.fn <- function(epoch, idx, max, this.seed, next.seed) {
@@ -48,6 +47,49 @@ rfractal(n, initiator=rinitiator, generator=rgenerator) %as% {
 }
 
 
+#' Create an initiator pattern for fractal generation
+#'
+#' @name rinitiator
+#' @param xrange Range of x values
+#' @param yrange Range of y values
+rinitiator(xrange=c(0,1), yrange=c(0,100)) %as% {
+  segments <- round(runif(1,1,3))
+  ymin <- round(runif(1, yrange[1], yrange[2]))
+  len <- round(runif(1,3,10))
+  ymax <- min(ymin + len, yrange[2])
+
+  mid <- runif(segments, xrange[1], xrange[2])
+  x <- c(xrange[1], mid, xrange[2])
+  x <- x[order(x)]
+  y <- round(runif(segments+2, ymin, ymax))
+  cbind(x,y)
+}
+
+
+#' Create a generator pattern for fractal generation
+#'
+#' @name rgenerator
+#' @param xrange Range of x values
+#' @param yrange Range of y values
+rgenerator(xrange=c(0,1), yrange=c(-1,1)) %as% {
+  segments <- round(runif(1,1,2))
+
+  mid <- round(runif(segments, xrange[1], xrange[2]),digits=1)
+  x <- c(xrange[1], mid, xrange[2])
+  x <- x[order(x)]
+  y <- round(runif(segments+2, yrange[1], yrange[2]), digits=1)
+  cbind(x,y)
+}
+
+
+
+#' Create a new seed
+#'
+#' @param old.seed Previous seed used to generate pattern
+#' @param new.seed Next seed used to generate pattern
+#' @param pattern Available patterns to use
+#' @param idx Index of current iteration
+#' @param epoch Current epoch
 next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
 {
   flog.trace("[%s.%s] old.seed:", epoch,idx)
@@ -77,142 +119,6 @@ next.seeds <- function(old.seed, new.seed, pattern, idx, epoch)
 }
 
 
-# count - total number of points to generate (will truncate to achieve exact
-# number
-# epochs - number of iterations to run. Note that the count grows quickly.
-# Example
-# Get 10 points
-# ps <- fractal(seed, pats, 10)
-# ps <- fractal(sample(sampleInitiators,1), sampleGenerators, 10)
-# Get 3 epochs
-# ps <- fractal(seed, pats, epochs=3)
-fractal <- function(seeds, patterns, count=NULL, epochs=NULL, ..., type='uniform')
-{
-  flog.warn("This function is deprecated. Use rfractal instead.")
-
-  if ('list' %in% class(seeds)) seed <- sample(seeds, 1)[[1]]
-  else seed <- seeds
-
-  do.call(paste('fractal.',type, sep=''), list(seed,patterns,count,epochs,...))
-}
-
-# ps <- fractal.uniform(seed,pats, 2)
-# ps <- fractal.uniform(seed,pattern.3, 1); plot(ps, type='l')
-# origin - The date at which to start time series. Default is the beginning of
-# the unix epoch, but any valid date is allowed.
-# date.fun - The function to use to create dates. This defaults to as.Date, but
-#   for intraday work, it's possible to use as.POSIXct
-# only - Only use the given index in pattern
-# Example
-# Get 10 points
-# ps <- fractal.uniform(seed, pats, 10)
-# Get 3 epochs
-# ps <- fractal.uniform(seed, pats, epochs=3)
-fractal.uniform <- function(seed, patterns, count=NULL, epochs=NULL,
-  origin='1970-01-01', date.fun=as.Date, only=NULL)
-{
-  flog.warn("This function is deprecated. Use rfractal instead.")
-
-  if (! 'list' %in% class(patterns)) patterns <- list(pattern.1=patterns)
-
-  # Calculate count based on size of seed and patterns
-  if (! is.null(epochs))
-  {
-    use.count <- FALSE
-    count <- (length(seed) - 1) * (length(patterns[[1]])-1)^epochs
-  }
-  else if (! is.null(count))
-  {
-    use.count <- TRUE
-    seed.legs <- nrow(seed)-1
-    pattern.legs <- nrow(patterns[[1]])-1
-    epochs <- floor(log(count / seed.legs, base=pattern.legs)) + 1
-    #cat("seed.legs:",seed.legs,"; pattern.legs:",pattern.legs,"\n")
-    flog.debug("Set epochs to %s",epochs)
-  }
-  if (is.na(epochs) | is.null(epochs)) stop("Unable to calculate epochs")
-
-  for (dummy in 1:epochs)
-  {
-    rows <- nrow(seed)
-    next.seed <- seed
-    for (idx in 2:rows)
-    {
-      if (! is.null(only)) pattern <- patterns[[only]]
-      else pattern <- patterns[[sample(length(patterns),1)]]
-
-      iteration <- next.seeds(seed, next.seed, pattern, idx, dummy)
-      seed <- iteration$this.seed
-      next.seed <- iteration$next.seed
-    }
-    seed <- next.seed[order(next.seed[,1]),]
-  }
-  # TODO: This may cause problems related to binary order sign
-  seed <- unique(seed)
-  #seed[,1] <- as.Date(seed[,1], origin=origin)
-  seed <- xts(seed[,2], order.by=date.fun(seed[,1], origin=origin))
-  if (use.count) seed <- tail(seed, count)
-  return(seed)
-}
-
-
-fractal.random <- function(seed, patterns, count=NULL, epochs=NULL, 
-  origin='1970-01-01', date.fun=as.Date, only=NULL)
-{
-  flog.warn("This function is deprecated. Use rfractal instead.")
-
-  if (! 'list' %in% class(patterns)) patterns <- list(pattern.1=patterns)
-
-  # Calculate count based on size of seed and patterns
-  if (! is.null(epochs))
-  {
-    use.count <- FALSE
-    count <- (length(seed) - 1) * (length(patterns[[1]])-1)^epochs
-  }
-  else if (! is.null(count))
-  {
-    use.count <- TRUE
-    seed.legs <- nrow(seed)-1
-    pattern.legs <- nrow(patterns[[1]])-1
-    epochs <- floor(log(count / seed.legs, base=pattern.legs)) + 1
-    #cat("seed.legs:",seed.legs,"; pattern.legs:",pattern.legs,"\n")
-    flog.debug("Set epochs to %s",epochs)
-  }
-  if (is.na(epochs) | is.null(epochs)) stop("Unable to calculate epochs")
-
-  for (dummy in 1:epochs)
-  {
-    pattern <- patterns[[sample(length(patterns),1)]]
-    idx <- sample((nrow(seed)-1), 1) + 1
-
-    x.delta <- seed[idx,1] - seed[idx-1,1]
-    y.delta <- seed[idx,2] - seed[idx-1,2]
-    scale <- c(x.delta, y.delta)
-    start <- c(seed[idx-1,1], seed[idx-1,2])
-    segment <- pattern * 
-      matrix(rep(scale, nrow(pattern)), ncol=2, byrow=TRUE) +
-      matrix(rep(start, nrow(pattern)), ncol=2, byrow=TRUE)
-    if (idx <= 2)
-    {
-      next.seed <- rbind(segment, seed[(idx+1):nrow(seed),])
-    }
-    else if (idx == nrow(seed))
-    {
-      # Last row
-      next.seed <- rbind(seed[1:(idx-2),], segment)
-    }
-    else
-    {
-      next.seed <- rbind(seed[1:(idx-2),], segment, seed[(idx+1):nrow(seed),])
-    }
-    seed <- next.seed[order(next.seed[,1]),]
-  }
-  # TODO: This may cause problems related to binary order sign
-  seed <- (unique(seed))
-  seed <- xts(seed[,2], order.by=date.fun(seed[,1], origin=origin))
-  if (use.count) seed <- tail(seed, count)
-  return(seed)
-}
 
 
 
@@ -264,17 +170,3 @@ fractal.random <- function(seed, patterns, count=NULL, epochs=NULL,
 #)
 #ps <- getPortfolioPrices('IBM',10, seeds=microInitiators, patterns=microGenerators, date.fun=as.POSIXct)
 
-# Unused
-#.fracret <- function(assets=10, epochs=3)
-#{
-#  fn <- function(x)
-#  {
-#    series <- fractal(seed, pats, epochs=epochs)
-#    series <- Delt(series)
-#    series <- series[! is.na(series) & ! is.infinite(series)]
-#    series <- series - mean(series)
-#  }
-#  rets <- do.call(cbind, lapply(1:assets, fn))
-#  names(rets) <- 1:assets
-#  rets
-#}

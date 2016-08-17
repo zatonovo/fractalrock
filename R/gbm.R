@@ -1,15 +1,22 @@
-# Wiener process
-# http://www.cscamm.umd.edu/lectures/evandenlectures_final.pdf
-# Ornstein-Uhlenbeck process
-# http://www.sitmo.com/article/calibrating-the-ornstein-uhlenbeck-model/
-# http://www.ms.unimelb.edu.au/publications/RampertshammerStefan.pdf
 
-
-# http://www.columbia.edu/~mh2078/MCS04/MCS_framework_FEegs.pdf
+#' Geometric Brownian motion
+#'
+#' @name gbm
+#' @param n Number of samples to generate
+#' @param s0 Initial value
+#' @param mu The mean-reverting value
+#' @param sigma The annualized standard deviation of the noise term
 gbm(n, s0=10, mu=0.01, sigma=0.03) %as% {
   cumprod(c(s0, exp((mu - sigma^2/2) / 252 + sigma*rnorm(n-1) / sqrt(252))))
 }
 
+#' Wiener process
+#'
+#' @name wiener
+#' @param n Number of samples to generate
+#' @param s Initial value
+#' @param mu The mean-reverting value
+#' @param sigma The annualized standard deviation of the noise term
 wiener(n, s=10, mu=0.01, sigma=0.03) %as% {
   wiener(n, s, mu, sigma, s)
 }
@@ -24,7 +31,4 @@ wiener(n, s, mu=0.01, sigma=0.03, acc) %as% {
 
 
 
-
-
-#rprocess('gbm', s) %as% 
 

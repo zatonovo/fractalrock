@@ -9,13 +9,25 @@ DAILY <- 60 * 24
 #' is specified as GMT.
 #' Sys.setenv(TZ='GMT')
 #'
+#' @name rintraday
 #' @examples
 #' th <- function(x) trading_hours(x,'cme')
 #' myou <- function(x) ou(x, 40, 3/24, 45, .03/1440)
 #' x <- rintraday(myou, obs=60)
-
+#'
 #' mygbm <- function(x) gbm(x, 40, .03/1440)
 #' y <- rintraday(mygbm, start='2014-01-01', end='2014-06-30', period=5, hours.fn=th)
+#'
+#' # Create correlated intraday prices
+#' seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
+#' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
+#' z <- rintraday(seed, cmat)
+#'
+#' Create correlated intraday OHLC bars with optional volume.
+#' seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
+#' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
+#' z <- rintraday(seed, cmat, ohlc=1, volume=100)
+#'
 rintraday(process, start, ohlc, volume, ...) %::% Function:.:logical:logical:...:xts
 rintraday(process, start=Sys.Date(), ohlc=FALSE, volume=FALSE, ...) %as% {
   dates <- trading_dates(start=start, ...)
@@ -30,14 +42,6 @@ rintraday(process, start=Sys.Date(), ohlc=FALSE, volume=FALSE, ...) %as% {
 }
 
 
-#' Create correlated intraday prices
-#'
-#' @examples
-#' th <- function(x) trading_hours(x,'cme')
-#' mygbm <- function(x) gbm(x, 40, .03/1440)
-#' seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
-#' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
-#' z <- rintraday(seed, cmat)
 rintraday(series, rho) %::% xts : matrix : xts
 rintraday(series, rho) %as% {
   if (all(rho[lower.tri(rho)] == 0))
@@ -55,14 +59,6 @@ rintraday(series, rho) %as% {
   out
 }
 
-#' Create correlated intraday OHLC bars with optional volume.
-#'
-#' @examples
-#' th <- function(x) trading_hours(x,'cme')
-#' mygbm <- function(x) gbm(x, 40, .03/1440)
-#' seed <- rintraday(mygbm, obs=60, period=5, hours.fn=th)
-#' cmat <- matrix(c(1,0,0, .8,1,0, .6,.4,1), ncol=3)
-#' z <- rintraday(seed, cmat, ohlc=1, volume=100)
 rintraday(series, rho, ohlc, volume) %::% xts : matrix : . : . : list
 rintraday(series, rho, ohlc=FALSE, volume=FALSE) %as% {
   prices <- rintraday(series, rho)
@@ -94,9 +90,10 @@ rintraday(series, rho, ohlc=FALSE, volume=FALSE) %as% {
 
 
 
-#' Compatible with POSIXct
+#' Create intraday ticks
+#'
 #' @param period In minutes
-#' @return Vector of seconds used to offset a date
+#' @return Vector of seconds used to offset a date. Compatible with POSIXct
 intraday_ticks <- function(period, hours) {
   if (all(is.na(hours))) return(numeric())
 
@@ -109,6 +106,9 @@ intraday_ticks <- function(period, hours) {
 
 
 
+#' Create holiday calendar
+#'
+#' @name holidays
 holidays(exchange) %::% character: Function
 holidays('cbt') %as% function(ys) as.Date(holidayNYSE(ys))
 holidays('cme') %as% function(ys) as.Date(holidayNYSE(ys))
@@ -117,7 +117,11 @@ holidays('nyse') %as% function(ys) as.Date(holidayNYSE(ys))
 holidays('nsdq') %as% function(ys) as.Date(holidayNYSE(ys))
 
 
-# Ignore short trading days for now
+#' Create trading hours
+#'
+#' Ignore short trading days for now
+#'
+#' @name trading_hours
 trading_hours(ds,exchange) %::% timeDate: character: xts
 trading_hours(ds,exchange) %as% trading_hours(as.Date(ds), exchange)
 
