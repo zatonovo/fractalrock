@@ -17,6 +17,7 @@ tile(x = c(0, 0), segments = 2, pop = c(0, 90, 180, 270))
 Create random tiles
 }
 \examples{
+library(lambda.tools)
 xs <- fold(1:4, function(a,b) tile(b), c(0,0))
 xs <- fold(1:4, function(a,b) tile(b), polygon(20))
 }

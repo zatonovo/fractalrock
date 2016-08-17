@@ -15,6 +15,7 @@ which replaces a triangle with 3 smaller triangles, one within each
 vertex of the original triangle.
 }
 \examples{
+library(lambda.tools)
 x <- polygon(3)
 xn <- fold(1:5, function(a,b) sierpinski3(b), x)
 }

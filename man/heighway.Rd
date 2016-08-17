@@ -15,6 +15,7 @@ Heighway Dragon, which is simply the union of two functions
 applied to the same set of points.
 }
 \examples{
+library(lambda.tools)
 # Create an instance with 12 iterations
 x <- rbind(seq(0,1, by=0.05),0)
 xn <- fold(1:12, function(a,b) heighway(b), x)

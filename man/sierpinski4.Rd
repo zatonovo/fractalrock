@@ -15,6 +15,7 @@ which replaces a square with 8 smaller squares on the inside
 perimeter of the original square.
 }
 \examples{
+library(lambda.tools)
 x <- polygon(4)
 xn <- fold(1:5, function(a,b) sierpinski4(b), x)
 }

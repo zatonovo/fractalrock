@@ -15,6 +15,7 @@ which replaces a pentagon with 5 smaller pentagons where each vertex
 contains a pentagon.
 }
 \examples{
+library(lambda.tools)
 x <- polygon(5)
 xn <- fold(1:5, function(a,b) sierpinski5(b), x)
 }
