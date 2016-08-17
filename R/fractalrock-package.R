@@ -30,8 +30,8 @@
 #' \tabular{ll}{
 #' Package: \tab fractalrock\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0.0\cr
-#' Date: \tab 2016-08-16\cr
+#' Version: \tab 1.4\cr
+#' Date: \tab 2016-08-17\cr
 #' License: \tab LGPL-3\cr
 #' LazyLoad: \tab yes\cr
 #' }
