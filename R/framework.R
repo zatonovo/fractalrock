@@ -65,9 +65,6 @@ trading_dates(start, end, calendar=holidayNYSE) %as% {
 
 trading_dates(start, obs, calendar=holidayNYSE) %::% a:numeric:Function:.
 trading_dates(start, obs, calendar=holidayNYSE) %when% { obs==0 } %as% {
-  # more reasonable to return NULL instead of as.Date(NA) here.
-  # And NULL cannot be coerced into class Date,
-  # so set return type to . here
   NULL
 }
 
@@ -87,17 +84,18 @@ trading_dates(start, obs, calendar=holidayNYSE) %when% { obs>0 } %as% {
       if(!is.null(dates))  from_date <- dates[length(dates)]+1
       step <- timeSequence(from=from_date, length.out=step.size)
       ys <- unique(year(step))
-      holidays <- fold(ys, function(y, holidays) {
+      sapply(ys, function(y) {
        if(is.null(holidays_save[[as.character(y)]])) {
-          holidays_save[[as.character(y)]] <- calendar(y)
-        }
-        # c(NULL, holidays) will coerce Date into integer, so judge the conditions
-        if(is.null(holidays)) {
-          holidays <- holidays_save[[as.character(y)]] 
-        } else holidays <- c(holidays, holidays_save[[as.character(y)]])
-      }, NULL)
+         holidays_save[[as.character(y)]] <- calendar(y)
+       }
+      })
+      # c(NULL, holidays) will coerce Date into integer
+      holidays <- fold(ys[2:length(ys)], function(y, holidays) {
+        holidays <- c(holidays, holidays_save[[as.character(y)]])
+      }, holidays_save[as.character(ys[1])])
+
       inc <- as.Date(step[isBizday(step, holidays=holidays)])
-      # same as above. c(NULL, inc) will coerce Date into integer
+      # c(NULL, inc) will coerce Date into integer
       if(is.null(dates)) { return(inc)
       } else return(c(dates, inc))
     }, NULL))
