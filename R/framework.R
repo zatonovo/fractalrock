@@ -65,6 +65,7 @@ trading_dates(start, end, calendar=holidayNYSE) %as% {
 
 trading_dates(start, obs, calendar=holidayNYSE) %::% a:numeric:Function:.
 trading_dates(start, obs, calendar=holidayNYSE) %when% { obs==0 } %as% {
+  # returning NULL, not NA
   NULL
 }
 
@@ -86,23 +87,22 @@ trading_dates(start, obs, calendar=holidayNYSE) %when% { obs>0 } %as% {
       ys <- unique(year(step))
       sapply(ys, function(y) {
        if(is.null(holidays_save[[as.character(y)]])) {
-         holidays_save[[as.character(y)]] <- calendar(y)
+         holidays_save[[as.character(y)]] <<- calendar(y)
        }
       })
-      # c(NULL, holidays) will coerce Date into integer
       holidays <- fold(ys[2:length(ys)], function(y, holidays) {
         holidays <- c(holidays, holidays_save[[as.character(y)]])
-      }, holidays_save[as.character(ys[1])])
+      }, holidays_save[[as.character(ys[1])]])
 
       inc <- as.Date(step[isBizday(step, holidays=holidays)])
-      # c(NULL, inc) will coerce Date into integer
+      # c(NULL, inc) will coerce Date into integer, so judge the conditions
       if(is.null(dates)) { return(inc)
       } else return(c(dates, inc))
     }, NULL))
   dates
 }
 
-trading_dates(start, obs, calendar=holidayNYSE) %as% {
+trading_dates(start, obs, calendar=holidayNYSE) %when% { obs<0 }  %as% {
   obs <- -obs
   start <- as.Date(start)
   # if use other numbers here, 
@@ -118,15 +118,15 @@ trading_dates(start, obs, calendar=holidayNYSE) %as% {
       if(!is.null(dates))  from_date <- dates[1] - 1
       step <- timeSequence(from = from_date - step.size + 1, length.out = step.size)
       ys <- unique(year(step))
-      holidays <- fold(ys, function(y, holidays) {
+      sapply(ys, function(y) {
        if(is.null(holidays_save[[as.character(y)]])) {
-          holidays_save[[as.character(y)]] <- calendar(y)
-        }
-        # c(NULL, holidays) will coerce Date into integer, so judge the conditions
-        if(is.null(holidays)) {
-          holidays <- holidays_save[[as.character(y)]] 
-        } else holidays <- c(holidays, holidays_save[[as.character(y)]])
-      }, NULL)
+         holidays_save[[as.character(y)]] <<- calendar(y)
+       }
+      })
+      holidays <- fold(ys[2:length(ys)], function(y, holidays) {
+        holidays <- c(holidays, holidays_save[[as.character(y)]])
+      }, holidays_save[[as.character(ys[1])]])
+
       inc <- as.Date(step[isBizday(step, holidays=holidays)])
       # same as above. c(inc, NULL) will coerce Date into integer
       if(is.null(dates)) { return(inc)
