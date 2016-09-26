@@ -97,26 +97,78 @@ trading_dates(start, end, calendar=holidayNYSE) %as% {
   as.Date(dates)
 }
 
-trading_dates(start, obs, calendar=holidayNYSE) %::% a:numeric:Function:Date
-trading_dates(start, obs, calendar=holidayNYSE) %when% { obs>=0 } %as% {
-  start <- as.Date(start)
-  # This is to get enough dates to account for holidays and weekends
-  shimmed <- ceiling(obs * 2)
-  dates <- timeSequence(from=start, length.out=shimmed)
-  dates <- as.Date(dates[isBizday(dates, holidays=calendar(unique(year(dates))))])
-  dates <- dates[dates >= start]
-  dates <- dates[1:obs]
+trading_dates(start, obs, calendar=holidayNYSE) %::% a:numeric:Function:.
+trading_dates(start, obs, calendar=holidayNYSE) %when% { obs==0 } %as% {
+  # returning NULL, not NA
+  NULL
 }
 
-trading_dates(start, obs, calendar=holidayNYSE) %as% {
+trading_dates(start, obs, calendar=holidayNYSE) %::% a:numeric:Function:Date
+trading_dates(start, obs, calendar=holidayNYSE) %when% { obs>0 } %as% {
   start <- as.Date(start)
-  # This is to get enough dates to account for holidays and weekends
-  shimmed <- ceiling(abs(obs) * 2)
-  dates <- timeSequence(from=as.Date(start)-shimmed, to=start)
-  dates <- as.Date(dates[isBizday(dates, holidays=calendar(unique(year(dates))))])
-  dates <- dates[dates <= start]
-  dates <- tail(dates, abs(obs))
+  # if use other numbers here, 
+  # make sure step.size * max.its can always cover obs trading days
+  step.size <- 50
+  # cannot use infinity here, memory will blow up
+  max.its <- ceiling(obs/step.size)*2
+  holidays_save <- list()
+  dates <- callCC(function(ext) fold(1:max.its, function(i, dates){
+      if (length(dates) >= obs) ext(dates[1:obs])
+      # not using ifelse function, cuz it will coerce Date into integer
+      from_date <- start
+      if(!is.null(dates))  from_date <- dates[length(dates)]+1
+      step <- timeSequence(from=from_date, length.out=step.size)
+      ys <- unique(year(step))
+      sapply(ys, function(y) {
+       if(is.null(holidays_save[[as.character(y)]])) {
+         holidays_save[[as.character(y)]] <<- calendar(y)
+       }
+      })
+      holidays <- fold(ys[2:length(ys)], function(y, holidays) {
+        holidays <- c(holidays, holidays_save[[as.character(y)]])
+      }, holidays_save[[as.character(ys[1])]])
+
+      inc <- as.Date(step[isBizday(step, holidays=holidays)])
+      # c(NULL, inc) will coerce Date into integer, so judge the conditions
+      if(is.null(dates)) { return(inc)
+      } else return(c(dates, inc))
+    }, NULL))
+  dates
 }
+
+trading_dates(start, obs, calendar=holidayNYSE) %when% { obs<0 }  %as% {
+  obs <- -obs
+  start <- as.Date(start)
+  # if use other numbers here, 
+  # make sure step.size * max.its can always cover obs trading days
+  step.size <- 50
+  # cannot use infinity here, memory will blow up
+  max.its <- ceiling(obs/step.size)*2
+  holidays_save <- list()
+  dates <- callCC(function(ext) fold(1:max.its, function(i, dates){
+      if (length(dates) >= obs) ext(tail(dates, obs))
+      # not using ifelse function, cuz it will coerce Date into integer
+      from_date <- start
+      if(!is.null(dates))  from_date <- dates[1] - 1
+      step <- timeSequence(from = from_date - step.size + 1, length.out = step.size)
+      ys <- unique(year(step))
+      sapply(ys, function(y) {
+       if(is.null(holidays_save[[as.character(y)]])) {
+         holidays_save[[as.character(y)]] <<- calendar(y)
+       }
+      })
+      holidays <- fold(ys[2:length(ys)], function(y, holidays) {
+        holidays <- c(holidays, holidays_save[[as.character(y)]])
+      }, holidays_save[[as.character(ys[1])]])
+
+      inc <- as.Date(step[isBizday(step, holidays=holidays)])
+      # same as above. c(inc, NULL) will coerce Date into integer
+      if(is.null(dates)) { return(inc)
+      } else return(c(inc, dates))
+    }, NULL))
+  dates
+}
+
 
 trading_dates(start, obs, period, hours.fn) %::% a:numeric:numeric:Function:POSIXt
 trading_dates(start, obs, period=1, hours.fn) %as% {
