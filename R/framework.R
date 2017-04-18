@@ -101,7 +101,7 @@ trading_dates(start, obs, calendar=holidayNYSE) %::% a:numeric:Function:Date
 trading_dates(start, obs, calendar=holidayNYSE) %when% { obs>=0 } %as% {
   start <- as.Date(start)
   # This is to get enough dates to account for holidays and weekends
-  shimmed <- ceiling(obs * 2)
+  shimmed <- max(ceiling(obs * 2),5)
   dates <- timeSequence(from=start, length.out=shimmed)
   dates <- as.Date(dates[isBizday(dates, holidays=calendar(unique(year(dates))))])
   dates <- dates[dates >= start]
@@ -111,7 +111,7 @@ trading_dates(start, obs, calendar=holidayNYSE) %when% { obs>=0 } %as% {
 trading_dates(start, obs, calendar=holidayNYSE) %as% {
   start <- as.Date(start)
   # This is to get enough dates to account for holidays and weekends
-  shimmed <- ceiling(abs(obs) * 2)
+  shimmed <- max(ceiling(abs(obs) * 2),5)
   dates <- timeSequence(from=as.Date(start)-shimmed, to=start)
   dates <- as.Date(dates[isBizday(dates, holidays=calendar(unique(year(dates))))])
   dates <- dates[dates <= start]
