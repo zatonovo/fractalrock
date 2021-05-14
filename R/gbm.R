@@ -6,29 +6,22 @@
 #' @param s0 Initial value
 #' @param mu The mean-reverting value
 #' @param sigma The annualized standard deviation of the noise term
-gbm(n, s0=10, mu=0.01, sigma=0.03) %as% {
-  cumprod(c(s0, exp((mu - sigma^2/2) / 252 + sigma*rnorm(n-1) / sqrt(252))))
+gbm(n, s0, mu, sigma, steps=252, mod_fn=NULL) %:=% {
+  xs <- c(s0, exp((mu - sigma^2/2) / steps + sigma*rnorm(n-1) / sqrt(steps)))
+  if (!is.null(mod_fn)) { xs <- mod_fn(xs) }
+  cumprod(xs)
 }
 
 #' Wiener process
 #'
 #' @name wiener
 #' @param n Number of samples to generate
-#' @param s Initial value
+#' @param s0 Initial value
 #' @param mu The mean-reverting value
 #' @param sigma The annualized standard deviation of the noise term
-wiener(n, s=10, mu=0.01, sigma=0.03) %as% {
-  wiener(n, s, mu, sigma, s)
+#' @param steps Number of steps in "annualized" period.
+wiener(n, s0, mu, sigma, steps=252, mod_fn=NULL) %:=% {
+  xs <- c(s0, (1 + mu / steps) + sigma * rnorm(n-1) / sqrt(steps))
+  if (!is.null(mod_fn)) { xs <- mod_fn(xs) }
+  cumprod(xs)
 }
-
-wiener(0, s, mu=0.01, sigma=0.03, acc) %as% acc
-
-wiener(n, s, mu=0.01, sigma=0.03, acc) %as% {
-  #s1 <- s * mu / 252 + sigma * rnorm(1) / sqrt(252)
-  s1 <- s * (1 + mu / 252) + sigma * rnorm(1) / sqrt(252)
-  wiener(n-1, s1, mu, sigma, c(acc, s1))
-}
-
-
-
-

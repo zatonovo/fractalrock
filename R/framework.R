@@ -93,7 +93,8 @@ trading_dates(start, end, calendar=holidayNYSE) %as% {
   start <- as.Date(start)
   end <- as.Date(end)
   dates <- timeSequence(from=start, to=end)
-  dates <- dates[isBizday(dates, holidays=calendar(unique(year(dates))))]
+  holidays <- calendar(unique(year(as.Date(dates))))
+  dates <- dates[isBizday(dates, holidays=holidays)]
   as.Date(dates)
 }
 
@@ -103,7 +104,8 @@ trading_dates(start, obs, calendar=holidayNYSE) %when% { obs>=0 } %as% {
   # This is to get enough dates to account for holidays and weekends
   shimmed <- ceiling(obs * 2)
   dates <- timeSequence(from=start, length.out=shimmed)
-  dates <- as.Date(dates[isBizday(dates, holidays=calendar(unique(year(dates))))])
+  holidays <- calendar(unique(year(as.Date(dates))))
+  dates <- as.Date(dates[isBizday(dates, holidays=holidays)])
   dates <- dates[dates >= start]
   dates <- dates[1:obs]
 }
@@ -113,7 +115,8 @@ trading_dates(start, obs, calendar=holidayNYSE) %as% {
   # This is to get enough dates to account for holidays and weekends
   shimmed <- ceiling(abs(obs) * 2)
   dates <- timeSequence(from=as.Date(start)-shimmed, to=start)
-  dates <- as.Date(dates[isBizday(dates, holidays=calendar(unique(year(dates))))])
+  holidays <- calendar(unique(year(as.Date(dates))))
+  dates <- as.Date(dates[isBizday(dates, holidays=holidays)])
   dates <- dates[dates <= start]
   dates <- tail(dates, abs(obs))
 }
